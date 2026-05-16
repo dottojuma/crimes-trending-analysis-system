@@ -33,13 +33,14 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.contenttypes',  # <-- Kagua hapa! Hakikisha neno 'contrib' lipo na hakuna herufi iliyofutika
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'crimes',
     'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken', 
+    'crimes',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,32 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # URL itakayotumika kufungua picha hizo kwenye browser (mfano: http://127.0.0.1:8000/media/picha.jpg)
 MEDIA_URL = '/media/'
 CORS_ALLOW_ALL_ORIGINS = True
+# RUHUSU SEVA IPKEE VITAMBULISHO VYA ULINZI (COOKIES/SESSIONS) KUTOKA FRON
+
+# Hakikisha origins zako zimeruhusiwa vizuri (pamoja na anwani za localhost)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:3000",
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization", # <--- Hii ndio inaruhusu Token ya Polisi isizuiliwe
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', # <--- Tunalazimisha mifumo isome Token pekee
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated', # <--- BADILISHA AllowAny IWE IsAuthenticated!
+    ],
+}
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'

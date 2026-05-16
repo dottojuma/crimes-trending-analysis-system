@@ -62,9 +62,9 @@
 
     </div>
 
-    <script>
+   <script>
         async function fuatiliaTukio() {
-            const reportId = document.getElementById('reportIdInput').value;
+            const reportId = document.getElementById('reportIdInput').value.trim(); // Tumeongeza .trim() kuondoa nafasi zilizoachwa wazi
             const resultArea = document.getElementById('resultArea');
             const errorArea = document.getElementById('errorArea');
             
@@ -78,7 +78,7 @@
                 return;
             }
 
-            // Tunatelemka kwenye ile njia tuliyotengeneza ya /api/reports/<id>/
+            // Tunatelemka kwenye ile njia ya /api/reports/<id>/ (Inakubali namba au herufi/UUID)
             const apiUrl = `http://127.0.0.1:8000/api/reports/${reportId}/`;
 
             try {
@@ -89,11 +89,14 @@
                     
                     // 1. Jaza taarifa kwenye HTML
                     resDescription.innerText = data.description;
-                    resDistrict.innerText = `Wilaya yenye ID namba ${data.district}`;
                     
-                    // Format tarehe kidogo
-                    const tareheSahihi = new Date(data.created_at).toLocaleString('sw-TZ');
-                    resDate.innerText = tareheSahihi;
+                    // MABADILISHO MAKUBWA HAPA: 
+                    // Badala ya data.district (ambayo ilikuwa inaleta namba), sasa hivi tunasoma data.district_name iliyotoka kwenye View yetu mpya!
+                    resDistrict.innerText = `Wilaya: ${data.district_name || "Imethibitishwa"}`;
+                    
+                    // Format tarehe kidogo (Inasoma data.tarehe tuliyoi-format kule Django au created_at ya kawaida)
+                    const tareheMbadala = data.tarehe || new Date(data.created_at).toLocaleString('sw-TZ');
+                    resDate.innerText = tareheMbadala;
 
                     // 2. Badilisha muonekano wa Badge kulingana na Status iliyotoka Django
                     statusBadge.className = "mt-2 inline-block px-3 py-1 rounded-full text-sm font-black border ";
@@ -114,7 +117,7 @@
                     errorArea.classList.add('hidden');
 
                 } else {
-                    // Ikiwa status code si 200 (mfano: 404 Not Found)
+                    // Ikiwa status code si 200 (mfano: 404 Not Found au 401 kama ulinzi umefunga)
                     resultArea.classList.add('hidden');
                     errorArea.classList.remove('hidden');
                 }
@@ -123,6 +126,6 @@
                 console.error(error);
             }
         }
-    </script>
+</script>
 </body>
 </html>

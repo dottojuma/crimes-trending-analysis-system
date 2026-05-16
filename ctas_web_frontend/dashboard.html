@@ -10,7 +10,18 @@
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold text-indigo-400 tracking-wide">CTAS - POLICE COMMAND CENTER</h1>
+            <h1 class="text-3xl font-extrabold text-indigo-400 tracking-wide">Maswanya</h1>
+            <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+    <div>
+        <h1 class="text-3xl font-black tracking-wider text-indigo-400">🛡️ CTAS POLICE COMMAND CENTER</h1>
+        <p class="text-slate-500 text-xs mt-1">Jopo la Udhibiti wa Dharura na Uchambuzi wa Uhalifu (Live)</p>
+    </div>
+    
+    <button onclick="tekelezaLogout()" 
+        class="bg-red-600/10 hover:bg-red-600 border border-red-500/20 hover:border-red-500 text-red-400 hover:text-white px-4 py-2 rounded-lg font-bold text-xs transition duration-200 cursor-pointer flex items-center gap-2">
+        Ondoka Kwenye Mfumo (Logout) 🔒
+    </button>
+</div>
             <p class="text-slate-400 text-sm mt-1">Utabiri wa AI na Usimamizi wa Ripoti za Uhalifu kwa Wakati Halisi</p>
         </div>
         <button onclick="fetchDashboardData()" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md font-bold transition cursor-pointer">
@@ -55,132 +66,193 @@
 
    <script>
     const baseUrl = "http://127.0.0.1:8000";
-    // REKEBISHO 1: Majina ya vigezo yameunganishwa vizuri hapa
-    let idadiYaZamaniYaRipoti = 0;
-    let niMaraYaKwanza = true;
+let idadiYaZamaniYaRipoti = 0;
+let niMaraYaKwanza = true;
 
-    async function fetchDashboardData() {
-        const loadingState = document.getElementById('loadingState');
-        const mainContent = document.getElementById('mainContent');
-        const predictionGrid = document.getElementById('predictionGrid');
-        const tableBody = document.getElementById('reportsTableBody');
+// 1. DAWA YA FIREFOX: Angalia kwanza kama token ipo kwenye URL Link
+const urlParams = new URLSearchParams(window.location.search);
+let token = urlParams.get('token');
 
-        try {
-            const response = await fetch(`${baseUrl}/api/prediction/`);
-            const jsonResult = await response.json();
+// 2. Kama haipo kwenye URL, jaribu kuisoma kwenye localStorage (kwa ajili ya Chrome)
+if (!token) {
+    token = localStorage.getItem('policeToken');
+}
 
-            if (response.ok && jsonResult.status === "Success") {
-                
-                // REKEBISHO 1: Jina la kigezo limeunganishwa
-                const idadiYaSasaYaRipoti = jsonResult.reports.length;
-                
-                if (!niMaraYaKwanza && idadiYaSasaYaRipoti > idadiYaZamaniYaRipoti) {
-                    // Ripoti mpya imeingia! Piga sauti ya beeper/king'ora cha kivinjari
-                    pigaKingoraChaPolisi();
-                    alert("⚠️ TAHADHARI YA DHARURA: Ripoti mpya ya uhalifu imepokelewa hivi sasa! Kagua meza ya matukio.");
-                }
-                
-                // Sasisha vigezo vyetu vya ukaguzi
-                idadiYaZamaniYaRipoti = idadiYaSasaYaRipoti;
-                niMaraYaKwanza = false;
+// 3. UKAGUZI WA ULINZI: Kama kote haipo, mfukuze!
+if (!token) {
+    alert("⚠️ Hauna ruhusa ya kuona ukurasa huu! Tafadhali log in kwanza.");
+    window.location.href = "login.html";
+}
 
-                // 1. JAZA KADI ZA UTABIRI
-                predictionGrid.innerHTML = "";
-                jsonResult.predictions.forEach(item => {
-                    const isHighRisk = item.kiwango_cha_hatari_utabiri.includes("HIGH");
-                    const badgeColor = isHighRisk ? "bg-red-500/20 text-red-400 border-red-500/50" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-                    predictionGrid.innerHTML += `
-                        <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold">${item.wilaya}</h3>
-                                <span class="text-xs px-2 py-0.5 rounded-full border ${badgeColor} font-bold">${item.kiwango_cha_hatari_utabiri}</span>
-                            </div>
-                            <p class="text-2xl font-black text-indigo-400 mb-2">${item.idadi_ya_matukio} <span class="text-xs text-slate-500 font-normal">matukio</span></p>
-                            <p class="text-xs text-slate-300 italic bg-slate-900/50 p-2 rounded border border-slate-700/30">"${item.ushauri_kwa_polisi}"</p>
-                        </div>
-                    `;
+// Kodi zingine zote za fetchDashboardData() na maisha mengine yanaendelea vilevile...
+
+        async function fetchDashboardData() {
+            const loadingState = document.getElementById('loadingState');
+            const mainContent = document.getElementById('mainContent');
+            const predictionGrid = document.getElementById('predictionGrid');
+            const tableBody = document.getElementById('reportsTableBody');
+
+            try {
+                // MAHUSUSI: Tunasafirisha Token kwenye Authorization Header!
+                const response = await fetch(`${baseUrl}/api/prediction/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Token ${token}`, // <--- TUNAWASILISHA FUNGUO YA GETI
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                // 2. JAZA MEZA YA MATUKIO
-                tableBody.innerHTML = "";
-                jsonResult.reports.forEach(report => {
-                    // REKEBISHO 2: Mabano ya ${report.latitude} yamerekebishwa hapa
-                    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}`;
-                    const imageLink = report.evidence_url ? `<a href="${baseUrl}${report.evidence_url}" target="_blank" class="text-indigo-400 hover:underline">Angalia Picha 🖼️</a>` : "<span class='text-slate-500'>Hakuna</span>";
+                const jsonResult = await response.json();
+
+                if (response.ok && jsonResult.status === "Success") {
+                    const idadiYaSasaYaRipoti = jsonResult.reports.length;
                     
-                    let statusColor = "text-yellow-400";
-                    if(report.status === "RESOLVED") statusColor = "text-emerald-400";
-                    if(report.status === "UNDER_INVESTIGATION") statusColor = "text-orange-400";
+                    if (!niMaraYaKwanza && idadiYaSasaYaRipoti > idadiYaZamaniYaRipoti) {
+                        pigaKingoraChaPolisi();
+                        alert("⚠️ TAHADHARI YA DHARURA: Ripoti mpya ya uhalifu imepokelewa hivi sasa!");
+                    }
+                    
+                    idadiYaZamaniYaRipoti = idadiYaSasaYaRipoti;
+                    niMaraYaKwanza = false;
 
-                    tableBody.innerHTML += `
-                        <tr class="hover:bg-slate-800/50 transition">
-                            <td class="p-4 font-mono font-bold text-slate-400">#${report.id}</td>
-                            <td class="p-4 text-slate-400">${report.tarehe}</td>
-                            <td class="p-4 font-semibold">${report.district_name}</td>
-                            <td class="p-4 max-w-xs truncate" title="${report.description}">${report.description}</td>
-                            <td class="p-4">${imageLink}</td>
-                            <td class="p-4">
-                                <a href="${mapsUrl}" target="_blank" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs transition inline-block">Fungua 📍</a>
-                            </td>
-                            <td class="p-4">
-                                <select onchange="badilishaStatus(${report.id}, this.value)" 
-                                    class="bg-slate-900 border border-slate-700 p-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold ${statusColor}">
-                                    <option value="NEW" ${report.status === 'NEW' ? 'selected' : ''}>NEW 🟢</option>
-                                    <option value="UNDER_INVESTIGATION" ${report.status === 'UNDER_INVESTIGATION' ? 'selected' : ''}>Inachunguzwa 🟡</option>
-                                    <option value="RESOLVED" ${report.status === 'RESOLVED' ? 'selected' : ''}>Imeisha 🔵</option>
-                                </select>
-                            </td>
-                        </tr>
-                    `;
-                });
+                    // JAZA KADI ZA UTABIRI
+                    predictionGrid.innerHTML = "";
+                    jsonResult.predictions.forEach(item => {
+                        const isHighRisk = item.kiwango_cha_hatari_utabiri.includes("HIGH");
+                        const badgeColor = isHighRisk ? "bg-red-500/20 text-red-400 border-red-500/50" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+                        predictionGrid.innerHTML += `
+                            <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-bold">${item.wilaya}</h3>
+                                    <span class="text-xs px-2 py-0.5 rounded-full border ${badgeColor} font-bold">${item.kiwango_cha_hatari_utabiri}</span>
+                                </div>
+                                <p class="text-2xl font-black text-indigo-400 mb-2">${item.idadi_ya_matukio} <span class="text-xs text-slate-500 font-normal">matukio</span></p>
+                                <p class="text-xs text-slate-300 italic bg-slate-900/50 p-2 rounded border border-slate-700/30">"${item.ushauri_kwa_polisi}"</p>
+                            </div>
+                        `;
+                    });
 
-                loadingState.classList.add('hidden');
-                mainContent.classList.remove('hidden');
+                    // JAZA MEZA YA MATUKIO
+                    tableBody.innerHTML = "";
+                    jsonResult.reports.forEach(report => {
+                        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}`;
+                        const imageLink = report.evidence_url ? `<a href="${baseUrl}${report.evidence_url}" target="_blank" class="text-indigo-400 hover:underline">Angalia Picha 🖼️</a>` : "<span class='text-slate-500'>Hakuna</span>";
+                        
+                        let statusColor = "text-yellow-400";
+                        if(report.status === "RESOLVED") statusColor = "text-emerald-400";
+                        if(report.status === "UNDER_INVESTIGATION") statusColor = "text-orange-400";
+
+                        tableBody.innerHTML += `
+                            <tr class="hover:bg-slate-800/50 transition">
+                                <td class="p-4 font-mono font-bold text-slate-400">#${report.id}</td>
+                                <td class="p-4 text-slate-400">${report.tarehe}</td>
+                                <td class="p-4 font-semibold">${report.district_name}</td>
+                                <td class="p-4 max-w-xs truncate" title="${report.description}">${report.description}</td>
+                                <td class="p-4">${imageLink}</td>
+                                <td class="p-4">
+                                    <a href="${mapsUrl}" target="_blank" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs transition inline-block">Fungua 📍</a>
+                                </td>
+                                <td class="p-4">
+                                    <select onchange="badilishaStatus(${report.id}, this.value)" 
+                                        class="bg-slate-900 border border-slate-700 p-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold ${statusColor}">
+                                        <option value="NEW" ${report.status === 'NEW' ? 'selected' : ''}>NEW 🟢</option>
+                                        <option value="UNDER_INVESTIGATION" ${report.status === 'UNDER_INVESTIGATION' ? 'selected' : ''}>Inachunguzwa 🟡</option>
+                                        <option value="RESOLVED" ${report.status === 'RESOLVED' ? 'selected' : ''}>Imeisha 🔵</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    loadingState.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                }
+            } catch (error) {
+                loadingState.innerHTML = `<p class='text-red-400'>Kosa la Muunganisho: Seva haipatikani.</p>`;
+                console.error(error);
             }
-        } catch (error) {
-            loadingState.innerHTML = `<p class='text-red-400'>Kosa la Muunganisho: Seva haipatikani. ${error}</p>`;
         }
+
+        function pigaKingoraChaPolisi() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
+            oscillator.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5); 
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1); 
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 1);
+        }
+
+        async function badilishaStatus(reportId, statusMpya) {
+            try {
+                const response = await fetch(`${baseUrl}/api/reports/${reportId}/`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Authorization': `Token ${token}`, // <--- TUNATUMA TOKEN PIA KWENYE UPDATE STATUS
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ status: statusMpya })
+                });
+                if (response.ok) {
+                    alert(`Status imesasishwa!`);
+                    fetchDashboardData();
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        // Kazi ya Logout (Kufuta ufunguo na kuondoka)
+        function tekelezaLogout() {
+            localStorage.clear(); // Safisha siri zote kwenye kivinjari
+            alert("Umetoka kwenye mfumo!");
+            window.location.href = "login.html";
+        }
+
+        window.onload = () => {
+            fetchDashboardData();
+            setInterval(fetchDashboardData, 10000); 
+        };
+        async function tekelezaLogout() {
+    // 1. Uliza kwanza askari kama ana uhakika wa kuondoka
+    if (!confirm("Je, una uhakika unataka kuondoka kwenye mfumo wa doria?")) {
+        return;
     }
 
-    // FUNCTION YA KUTENGENEZA SAUTI YA KING'ORA (AUDIO SYNTHESIZER)
-    function pigaKingoraChaPolisi() {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
-        oscillator.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5); 
-        
-        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1); 
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 1);
-    }
+    // 2. Soma Token iliyopo kwa sasa ili tuiambie Django iifute kabisa
+    // Kumbuka: Kama ulitumia ile mbinu ya URL, tunasoma kutoka kwenye URL au localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    let ufunguo = urlParams.get('token') || localStorage.getItem('policeToken');
 
-    async function badilishaStatus(reportId, statusMpya) {
-        try {
-            const response = await fetch(`${baseUrl}/api/reports/${reportId}/`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: statusMpya })
-            });
-            if (response.ok) {
-                alert(`Status imesasishwa!`);
-                fetchDashboardData();
+    try {
+        // 3. Tuma taarifa Django ili kuifuta Token kwenye database kwa usalama zaidi
+        const response = await fetch("http://127.0.0.1:8000/api/auth/logout/", {
+            method: "POST",
+            headers: {
+                "Authorization": `Token ${ufunguo}`,
+                "Content-Type": "application/json"
             }
-        } catch (error) { console.error(error); }
-    }
+        });
 
-    // AMRI YA WAKATI HALISI (POLLING)
-    window.onload = () => {
-        fetchDashboardData();
-        setInterval(fetchDashboardData, 10000); 
-    };
+        // 4. Hata kama seva imeshajibu au imegoma, sisi tunasafisha kivinjari chetu hapa nyumbani
+        localStorage.removeItem('policeToken');
+        localStorage.removeItem('policeUsername');
+        
+        alert("🔒 Umetoka kwenye mfumo salama. Kazi njema Kamanda!");
+        
+        // 5. Mtupilie mbali askari arudi kwenye ukurasa wa Login
+        window.location.href = "login.html";
+
+    } catch (error) {
+        console.error("Kosa la mtandao wakati wa logout:", error);
+        // Kama mtandao umekata, bado tunamsafisha kwa usalama wake
+        localStorage.removeItem('policeToken');
+        window.location.href = "login.html";
+    }
+}
 </script>
 </body>
 </html>

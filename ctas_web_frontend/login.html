@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTAS - Polisi Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-white font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+        
+        <div class="text-center mb-8">
+            <span class="text-4xl">🛡️</span>
+            <h1 class="text-2xl font-black text-indigo-400 mt-2 tracking-wider">CTAS COMMAND LOGIN</h1>
+            <p class="text-slate-500 text-xs mt-1">Lango Maalum la Maafisa wa Jeshi la Polisi pekee</p>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Jina la Mtumiaji (Username)</label>
+                <input type="text" id="username" required
+                    class="w-full p-3 bg-slate-950 border border-slate-800 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-200">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nenosiri (Password)</label>
+                <input type="password" id="password" required
+                    class="w-full p-3 bg-slate-950 border border-slate-800 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-200">
+            </div>
+
+            <button type="submit" id="loginBtn"
+                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-md font-bold transition duration-200 cursor-pointer text-sm tracking-wide">
+                Ingia Kwenye Jopo 🔓
+            </button>
+        </form>
+
+        <div id="errorMessage" class="hidden mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-md text-center font-semibold"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorDiv = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.classList.add('hidden');
+            loginBtn.innerText = "Inahakiki...";
+            loginBtn.disabled = true;
+
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // ONDOA credentials ya mwanzo, haihitajiki hapa
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+
+                const data = await response.json();
+
+               // TAFUTA SEHEMU HII KWENYE login.html NA UIBADILISHE IWE HIVI:
+
+if (response.ok && data.status === "Success") {
+    // Tunatunza bado kwa ajili ya usalama wa baadae
+    localStorage.setItem('policeToken', data.token);
+    
+    alert(`Karibu Kamanda, ${data.user}! Mfumo umefunguliwa.`);
+    
+    // DAWA YA UHAKIKA: Tunatupa Token kwenye URL yenyewe!
+    window.location.href = `dashboard.html?token=${data.token}`; 
+}
+
+ else {
+    errorDiv.innerText = data.message || "Ufikiaji umekataliwa.";
+    errorDiv.classList.remove('hidden');
+}
+            } catch (error) {
+                errorDiv.innerText = "Kosa la kiufundi: Imeshindwa kuwasiliana na seva.";
+                errorDiv.classList.remove('hidden');
+                console.error(error);
+            } finally {
+                loginBtn.innerText = "Ingia Kwenye Jopo 🔓";
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
