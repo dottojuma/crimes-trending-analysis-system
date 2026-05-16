@@ -119,4 +119,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+import os # <-- Hakikisha hii ipo juu au iweke hapa chini
+
+# Njia ya folda ambapo picha halisi zitahifadhiwa kwenye kompyuta yako
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# URL itakayotumika kufungua picha hizo kwenye browser (mfano: http://127.0.0.1:8000/media/picha.jpg)
+MEDIA_URL = '/media/'
 CORS_ALLOW_ALL_ORIGINS = True

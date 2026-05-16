@@ -25,7 +25,10 @@ class CrimeReport(models.Model):
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     crime_type = models.ForeignKey(CrimeType, on_delete=models.CASCADE)
     description = models.TextField()
-    evidence_url = models.CharField(max_length=255, blank=True, null=True) # Kwa ajili ya picha/video/audio
+    # Tumeibadilisha kutoka URLField kwenda ImageField. 
+    # upload_to='crimes_evidence/' ina maana picha zitaingia ndani ya media/crimes_evidence/
+    # blank=True, null=True ina maana mwananchi anaweza kuripoti hata bila kuweka picha (hiari)
+    evidence_url = models.ImageField(upload_to='crimes_evidence/', blank=True, null=True)
     gps_latitude = models.FloatField()
     gps_longitude = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True) # Muda na tarehe kiotomatiki

@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.urls import path
-# 1. Tumeagiza (import) CrimePredictionAPIView kutoka kwenye views zetu
-from crimes.views import CrimeReportListCreateAPIView, CrimePredictionAPIView 
+from django.conf import settings # <-- Tumeongeza hii
+from django.conf.urls.static import static # <-- Tumeongeza hii
+from crimes.views import CrimeReportListCreateAPIView, CrimePredictionAPIView
 
 urlpatterns = [
     path('admin/', admin.site.url_urls if hasattr(admin.site, 'url_urls') else admin.site.urls),
-    
-    # Njia ya mwananchi kutuma na kusoma ripoti
-    path('api/reports/', CrimeReportListCreateAPIView.as_view(), name='crime-report-list-create'), 
-    
-    # 2. NJIA MPYA: Njia ya polisi kuona utabiri na uchambuzi wa wilaya zote
-    path('api/prediction/', CrimePredictionAPIView.as_view(), name='crime-prediction'), 
+    path('api/reports/', CrimeReportListCreateAPIView.as_view(), name='crime-report-list-create'),
+    path('api/prediction/', CrimePredictionAPIView.as_view(), name='crime-prediction'),
 ]
+
+# Hii mistari inaiambia Django kuruhusu picha zilizopo kwenye folda la media zionekane mtandaoni wakati wa majaribio
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

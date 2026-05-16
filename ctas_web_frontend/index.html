@@ -12,7 +12,7 @@
         
         <div class="text-center mb-6">
             <h1 class="text-2xl font-bold text-indigo-900">CTAS - Ripoti Tukio la Uhalifu</h1>
-            <p class="text-gray-600 text-sm mt-1">Jaza fomu hii kwa uangalifu ili kutuma taarifa kwa siri kwenda Jeshi la Polisi.</p>
+            <p class="text-gray-600 text-sm mt-1">Jaza fomu hii kwa uangalifu ili kutuma taarifa na picha ya ushahidi kwa siri kwenda Jeshi la Polisi.</p>
         </div>
 
         <form id="crimeReportForm" class="space-y-4">
@@ -38,19 +38,32 @@
                     placeholder="Mfano: 2">
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">GPS Latitude</label>
-                    <input type="number" step="any" id="latitude" required
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                        placeholder="Mfano: -6.7924">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">GPS Longitude</label>
-                    <input type="number" step="any" id="longitude" required
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                        placeholder="Mfano: 39.2714">
-                </div>
+            <div class="grid grid-cols-1 gap-2">
+    <label class="block text-sm font-semibold text-gray-700">Eneo la Tukio (GPS Coordinates)</label>
+    <button type="button" onclick="pataEneoLangu()" 
+        class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-md font-bold text-xs transition mb-2 cursor-pointer flex items-center justify-center gap-1 w-full">
+        Soma GPS ya Eneo Langu Kiotomatiki 📍
+    </button>
+    
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">GPS Latitude</label>
+            <input type="number" step="any" id="latitude" required readonly
+                class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none"
+                placeholder="Inasoma...">
+        </div>
+        <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">GPS Longitude</label>
+            <input type="number" step="any" id="longitude" required readonly
+                class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none"
+                placeholder="Inasoma...">
+        </div>
+    </div>
+</div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Picha ya Ushahidi (Hiari)</label>
+                <input type="file" id="evidenceImage" accept="image/*"
+                    class="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
             </div>
 
             <button type="submit" id="submitBtn"
@@ -61,61 +74,90 @@
     </div>
 
     <script>
-        // Kukamata Fomu kutoka kwenye HTML ili tuweze kuisikiliza (Event Listener)
         const form = document.getElementById('crimeReportForm');
         const submitBtn = document.getElementById('submitBtn');
 
-        // KUSIKILIZA ANWANI: Mtumiaji akibonyeza kitufe cha kutuma
         form.addEventListener('submit', async (event) => {
-            // 1. ZUIA FOMU ISIREFRESH UKURASA (Prevent Default Behavior)
-            event.preventDefault();
+            event.preventDefault(); // Zuia ukurasa usijirudishe (refresh)
 
-            // 2. BADILISHA KITUFE KUWA LOADING STATE
-            submitBtn.innerText = "Inatuma...";
+            // Weka kitufe kwenye hali ya loading
+            submitBtn.innerText = "Inatuma Ripoti na Picha...";
             submitBtn.disabled = true;
 
-            // 3. ANWANI YA BACKEND API (DJANGO ENDPOINT)
             const apiUrl = "http://127.0.0.1:8000/api/reports/";
 
-            // 4. KUKUSANYA DATA KUTOKA KWENYE FOMU NA KUZIGEUSA KUWA JAVASCRIPT OBJECT
-            const reportData = {
-                description: document.getElementById('description').value,
-                district: parseInt(document.getElementById('districtId').value),     // Geuza kuwa Integer
-                crime_type: parseInt(document.getElementById('crimeTypeId').value), // Geuza kuwa Integer
-                gps_latitude: parseFloat(document.getElementById('latitude').value), // Geuza kuwa Decimal/Float
-                gps_longitude: parseFloat(document.getElementById('longitude').value),
-                status: "NEW" // Ripoti zote zinaanza zikiwa mpya
-            };
+            // 1. KUTUMIA FORMDATA: Badala ya {} Object ya kawaida, tunatumia FormData kubeba faili halisi
+            const formData = new FormData();
+            
+            // 2. JAZA MAANDISHI KWENYE FORMDATA
+            formData.append('description', document.getElementById('description').value);
+            formData.append('district', parseInt(document.getElementById('districtId').value));
+            formData.append('crime_type', parseInt(document.getElementById('crimeTypeId').value));
+            formData.append('gps_latitude', parseFloat(document.getElementById('latitude').value));
+            formData.append('gps_longitude', parseFloat(document.getElementById('longitude').value));
+            formData.append('status', 'NEW');
+
+            // 3. JAZA FAILI LA PICHA (Kama mtumiaji amechagua picha)
+            const imageFile = document.getElementById('evidenceImage').files[0];
+            if (imageFile) {
+                // 'evidence_url' lazima ilingane kabisa na jina la field tuliloliweka kule Django models.py
+                formData.append('evidence_url', imageFile);
+            }
 
             try {
-                // 5. SAFIRISHA DATA (HTTP FETCH POST REQUEST)
+                // 4. SAFIRISHA DATA (HTTP FETCH POST)
+                // WARNING: Unapotumia FormData, USIWEKE 'Content-Type' kwenye headers. 
+                // Kivinjari kitajua chenyewe na kuweka 'multipart/form-data; boundary=...'
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json' // Tofahamisha Django kuwa tunatuma JSON
-                    },
-                    body: JSON.stringify(reportData) // Geuza Object ya JS kuwa umbo la JSON string halisi
+                    body: formData // Tunasafirisha ule mfuko wetu wa FormData
                 });
 
-                // 6. CHAMBUA MAJIBU YA BACKEND SEVA
                 if (response.ok) {
-                    // Kama status code ipo kati ya 200-299 (Success)
-                    alert("Hongera! Ripoti yako imepokelewa na Jeshi la Polisi kwa mafanikio.");
-                    form.reset(); // Safisha fomu baada ya kufanikiwa
+                    alert("Hongera! Ripoti yako pamoja na picha ya ushahidi zimepokelewa na Polisi.");
+                    form.reset(); // Safisha fomu
                 } else {
-                    // Seva imekataa (Kuna makosa ya muundo au validiations)
-                    alert("Kosa limejitokeza: Seva imekataa kupokea data. Angalia kama ID zipo sahihi.");
+                    const errorData = await response.json();
+                    alert("Kosa limejitokeza: Seva imekataa data yako. Angalia makosa kwenye console.");
+                    console.error("Seva Response Error:", errorData);
                 }
             } catch (error) {
-                // Hapa inakamata makosa kama server ipo OFF au hakuna mtandao kabisa
-                alert("Tatizo la Mtandao: Imeshindwa kuunganishwa na Seva ya Django. Hakikisha 'runserver' ipo hai.");
+                alert("Tatizo la Mtandao: Imeshindwa kuunganishwa na Seva ya Django.");
                 console.error("Network Error: ", error);
             } finally {
-                // 7. RUDISHA KITUFE HALI YA KAWAIDA
+                // Rudisha kitufe hali ya kawaida
                 submitBtn.innerText = "Tuma Ripoti Polisi";
                 submitBtn.disabled = false;
             }
         });
+        // FUNCTION YA KUSOMA GPS YA KIFAA CHA MTUMIAJI
+function pataEneoLangu() {
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
+
+    // Kagua kama kivinjari kinaruhusu kusoma GPS
+    if (navigator.geolocation) {
+        // Omba eneo halisi kwa sasa
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                // Ukipata, jaza kwenye visanduku vya fomu kiotomatiki
+                latInput.value = position.coords.latitude;
+                lngInput.value = position.coords.longitude;
+                alert("Eneo lako limesomwa kwa mafanikio kupitia Satelaiti!");
+            },
+            (error) => {
+                // Makosa kama mtumiaji akikataa kutoa ruhusa (Permission Denied)
+                alert("Imeshindwa kusoma GPS. Hakikisha umeruhusu 'Location Access' kwenye kivinjari chako.");
+                console.error("GPS Error: ", error);
+            }
+        );
+    } else {
+        alert("Kivinjari chako hakina uwezo wa kusoma GPS (Not Supported).");
+    }
+}
+
+// Maboresho: Kuruhusu fomu isome eneo mara moja mtumiaji akifungua ukurasa
+window.onload = pataEneoLangu;
     </script>
 </body>
 </html>
