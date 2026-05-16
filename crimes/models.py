@@ -1,0 +1,35 @@
+from django.db import models
+
+# 1. Meza ya Wilaya (Districts)
+class District(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+# 2. Meza ya Aina za Uhalifu (Crime Types)
+class CrimeType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+# 3. Meza Kuu ya Taarifa za Matukio (Crime Reports)
+class CrimeReport(models.Model):
+    STATUS_CHOICES = [
+        ('NEW', 'Mpya / Imepokelewa'),
+        ('UNDER_INVESTIGATION', 'Inachunguzwa'),
+        ('RESOLVED', 'Imeshitakiwa / Imekwisha'),
+    ]
+
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    crime_type = models.ForeignKey(CrimeType, on_delete=models.CASCADE)
+    description = models.TextField()
+    evidence_url = models.CharField(max_length=255, blank=True, null=True) # Kwa ajili ya picha/video/audio
+    gps_latitude = models.FloatField()
+    gps_longitude = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True) # Muda na tarehe kiotomatiki
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='NEW')
+
+    def __str__(self):
+        return f"{self.crime_type.name} - {self.district.name} ({self.created_at.strftime('%Y-%m-%d')})"
