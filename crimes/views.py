@@ -13,7 +13,7 @@ class CrimeReportListCreateAPIView(generics.ListCreateAPIView):
 # 2. VIEW MPYA YA UTABIRI (Hakikisha herufi zinalingana kabisa na za urls.py)
 class CrimePredictionAPIView(APIView):
     def get(self, request):
-        # Kupata idadi ya ripoti kwa kila wilaya
+        # 1. Takwimu za Wilaya (kama mwanzo)
         district_stats = CrimeReport.objects.values('district__name').annotate(total=Count('id')).order_by('-total')
         
         predictions = []
@@ -21,7 +21,6 @@ class CrimePredictionAPIView(APIView):
             district_name = stat['district__name']
             total_crimes = stat['total']
             
-            # Algorithm ya utabiri na viwango vya hatari
             if total_crimes > 5:
                 risk_level = "HIGH (KUBWA)"
                 recommendation = "Ongezeni doria maeneo haya haraka iwezekanavyo."
@@ -36,8 +35,27 @@ class CrimePredictionAPIView(APIView):
                 "ushauri_kwa_polisi": recommendation
             })
 
+        # 2. SEHEMU MPYA: Leta orodha ya ripoti zote moja moja kwa ajili ya Dashboard ya Polisi
+        all_reports = CrimeReport.objects.all().order_by('-created_at')
+        reports_data = []
+        for r in all_reports:
+            reports_data.append({
+                "id": r.id,
+                "description": r.description,
+                "district_name": r.district.name if r.district else "Haijulikani",
+                "status": r.status,
+                "evidence_url": r.evidence_url.url if r.evidence_url else None,
+                "latitude": r.gps_latitude,
+                "longitude": r.gps_longitude,
+                "tarehe": r.created_at.strftime("%Y-%m-%d %H:%M")
+            })
+
         return Response({
             "status": "Success",
-            "message": "Utabiri wa mwenendo wa uhalifu Dar es Salaam",
-            "data": predictions
+            "predictions": predictions,
+            "reports": reports_data # Tunasafirisha na ripoti zote moja moja hapa
         })
+    # KAZI MPYA: Inaruhusu kusoma tukio moja maalum au kulisadisha (Update)
+class CrimeReportDetailAPIView(generics.RetrieveUpdateAPIView):
+    queryset = CrimeReport.objects.all()
+    serializer_class = CrimeReportSerializer

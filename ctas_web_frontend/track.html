@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTAS - Fuatilia Ripoti Yako</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-indigo-900">Fuatilia Hatua ya Ripoti 🕵️‍♂️</h1>
+            <p class="text-gray-600 text-sm mt-1">Ingiza namba ya utambulisho ya ripoti yako (Report ID) ili kuona maendeleo kutoka Jeshi la Polisi.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Namba ya Ripoti (Report ID)</label>
+                <div class="flex gap-2">
+                    <input type="number" id="reportIdInput" required
+                        class="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        placeholder="Mfano: 5">
+                    <button onclick="fuatiliaTukio()" 
+                        class="bg-indigo-900 text-white px-4 py-2.5 rounded-md font-bold hover:bg-indigo-800 transition cursor-pointer">
+                        Tafuta
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultArea" class="hidden mt-6 pt-6 border-t border-gray-200 space-y-4">
+            
+            <div class="bg-slate-50 p-4 rounded-lg border border-gray-200">
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Hali ya Sasa ya Ripoti:</p>
+                
+                <div id="statusBadge" class="mt-2 inline-block px-3 py-1 rounded-full text-sm font-black border">
+                    INAPAKIA...
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Wilaya Ilirepotiwa:</p>
+                <p id="resDistrict" class="text-sm font-semibold text-gray-800 mt-1">-</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Maelezo Yako:</p>
+                <p id="resDescription" class="text-sm text-gray-600 mt-1 italic">-</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Tarehe ya Tukio:</p>
+                <p id="resDate" class="text-sm text-gray-700 mt-1">-</p>
+            </div>
+        </div>
+
+        <div id="errorArea" class="hidden mt-6 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm text-center">
+            Namba hiyo ya ripoti haijapatikana kwenye mfumo. Tafadhali kagua tena namba uliyoweka.
+        </div>
+
+    </div>
+
+    <script>
+        async function fuatiliaTukio() {
+            const reportId = document.getElementById('reportIdInput').value;
+            const resultArea = document.getElementById('resultArea');
+            const errorArea = document.getElementById('errorArea');
+            
+            const statusBadge = document.getElementById('statusBadge');
+            const resDistrict = document.getElementById('resDistrict');
+            const resDescription = document.getElementById('resDescription');
+            const resDate = document.getElementById('resDate');
+
+            if (!reportId) {
+                alert("Tafadhali ingiza namba ya ripoti kwanza!");
+                return;
+            }
+
+            // Tunatelemka kwenye ile njia tuliyotengeneza ya /api/reports/<id>/
+            const apiUrl = `http://127.0.0.1:8000/api/reports/${reportId}/`;
+
+            try {
+                const response = await fetch(apiUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // 1. Jaza taarifa kwenye HTML
+                    resDescription.innerText = data.description;
+                    resDistrict.innerText = `Wilaya yenye ID namba ${data.district}`;
+                    
+                    // Format tarehe kidogo
+                    const tareheSahihi = new Date(data.created_at).toLocaleString('sw-TZ');
+                    resDate.innerText = tareheSahihi;
+
+                    // 2. Badilisha muonekano wa Badge kulingana na Status iliyotoka Django
+                    statusBadge.className = "mt-2 inline-block px-3 py-1 rounded-full text-sm font-black border ";
+                    
+                    if (data.status === "NEW") {
+                        statusBadge.innerText = "IPOKELEWA (MPYA) 🟢";
+                        statusBadge.classList.add("bg-green-50", "text-green-700", "border-green-200");
+                    } else if (data.status === "UNDER_INVESTIGATION") {
+                        statusBadge.innerText = "INACHUNGUZWA NA POLISI 🟡";
+                        statusBadge.classList.add("bg-amber-50", "text-amber-700", "border-amber-200");
+                    } else if (data.status === "RESOLVED") {
+                        statusBadge.innerText = "IMETATULIWA / IMEISHWA 🔵";
+                        statusBadge.classList.add("bg-blue-50", "text-blue-700", "border-blue-200");
+                    }
+
+                    // Onyesha matokeo, ficha error
+                    resultArea.classList.remove('hidden');
+                    errorArea.classList.add('hidden');
+
+                } else {
+                    // Ikiwa status code si 200 (mfano: 404 Not Found)
+                    resultArea.classList.add('hidden');
+                    errorArea.classList.remove('hidden');
+                }
+            } catch (error) {
+                alert("Kosa la kiufundi: Imeshindwa kuwasiliana na seva ya Django.");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

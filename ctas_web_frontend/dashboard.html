@@ -3,117 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTAS - Jopo la Utabiri la Polisi</title>
+    <title>CTAS - Jopo la Utabiri na Udhibiti la Polisi</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-slate-900 text-white font-sans min-h-screen p-6">
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold text-indigo-400 tracking-wide">CTAS - POLICE ANALYTICS</h1>
-            <p class="text-slate-400 text-sm mt-1">Mfumo wa Kitaalamu wa Utabiri na Mwenendo wa Uhalifu - Dar es Salaam</p>
+            <h1 class="text-3xl font-extrabold text-indigo-400 tracking-wide">CTAS - POLICE COMMAND CENTER</h1>
+            <p class="text-slate-400 text-sm mt-1">Utabiri wa AI na Usimamizi wa Ripoti za Uhalifu kwa Wakati Halisi</p>
         </div>
-        <button onclick="fetchPredictionData()" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md font-bold transition cursor-pointer">
+        <button onclick="fetchDashboardData()" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md font-bold transition cursor-pointer">
             Refresh Data 🔄
         </button>
     </div>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto space-y-12">
         
         <div id="loadingState" class="text-center py-12">
-            <p class="text-xl text-slate-400 animate-pulse">Inasoma data za utabiri kutoka kwenye AI Engine...</p>
+            <p class="text-xl text-slate-400 animate-pulse">Inapakia mifumo yote kutoka kwenye seva...</p>
         </div>
 
-        <div id="predictionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+        <div id="mainContent" class="hidden space-y-12">
+            <div>
+                <h2 class="text-xl font-bold text-slate-300 mb-4 border-l-4 border-indigo-500 pl-2">Utabiri wa Hali ya Hatari Wilayani (AI Analytics)</h2>
+                <div id="predictionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
+
+            <div>
+                <h2 class="text-xl font-bold text-slate-300 mb-4 border-l-4 border-emerald-500 pl-2">Orodha na Udhibiti wa Ripoti Zilizowasilishwa</h2>
+                <div class="overflow-x-auto bg-slate-800 rounded-xl border border-slate-700">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-700/50 border-b border-slate-700 text-slate-300 text-sm uppercase">
+                                <th class="p-4">ID</th>
+                                <th class="p-4">Tarehe</th>
+                                <th class="p-4">Wilaya</th>
+                                <th class="p-4">Maelezo ya Tukio</th>
+                                <th class="p-4">Ushahidi</th>
+                                <th class="p-4">Ramani</th>
+                                <th class="p-4">Hatua ya Tukio (Status)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody" class="divide-y divide-slate-700/50 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <script>
-        /// KAZI KUU (FUNCTION): KUCHUKUA UTABIRI KUTOKA DJANGO API
-        /// 
-        /// Hii function inapiga hodi kwenye seva yetu, inachukua takwimu za wilaya,
-        /// na kuzitengenezea kadi za HTML kulingana na kiwango cha hatari kilichopigiwa hesabu.
-        async function fetchPredictionData() {
-            const loadingState = document.getElementById('loadingState');
-            const predictionGrid = document.getElementById('predictionGrid');
-            
-            loadingState.classList.remove('hidden');
-            predictionGrid.classList.add('hidden');
-            predictionGrid.innerHTML = ""; 
+   <script>
+    const baseUrl = "http://127.0.0.1:8000";
+    // REKEBISHO 1: Majina ya vigezo yameunganishwa vizuri hapa
+    let idadiYaZamaniYaRipoti = 0;
+    let niMaraYaKwanza = true;
 
-            const apiUrl = "http://127.0.0.1:8000/api/prediction/";
+    async function fetchDashboardData() {
+        const loadingState = document.getElementById('loadingState');
+        const mainContent = document.getElementById('mainContent');
+        const predictionGrid = document.getElementById('predictionGrid');
+        const tableBody = document.getElementById('reportsTableBody');
 
-            try {
-                const response = await fetch(apiUrl);
-                const jsonResult = await response.json();
+        try {
+            const response = await fetch(`${baseUrl}/api/prediction/`);
+            const jsonResult = await response.json();
 
-                if (response.ok && jsonResult.status === "Success") {
-                    const predictions = jsonResult.data;
-
-                    if (predictions.length === 0) {
-                        loadingState.innerHTML = "<p class='text-slate-400'>Hakuna data za ripoti zilizopatikana kwenye database kwa sasa.</p>";
-                        return;
-                    }
-
-                    predictions.forEach(item => {
-                        const isHighRisk = item.kiwango_cha_hatari_utabiri.includes("HIGH");
-                        const badgeColor = isHighRisk ? "bg-red-500/20 text-red-400 border-red-500/50" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-                        const cardBorder = isHighRisk ? "border-red-500/30 hover:border-red-500/60" : "border-slate-700 hover:border-slate-500";
-
-                        // MABORESHO MAKUBWA: Tunachukua Coordinates za mwisho zilizoripotiwa kwenye wilaya hii (kama zipo)
-                        // Kwa sasa tunatumia coordinates zilizoripotiwa mwisho, au tunatoa muundo wa ramani ya wilaya kwa ujumla
-                        const lat = item.mwisho_latitude || "-6.7924"; // Fallback kwenda DSM center kama hakuna
-                        const lng = item.mwisho_longitude || "39.2714";
-                        
-                        // Muundo sahihi wa Google Maps URL unaotambuliwa na vivinjari vyote duniani
-const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-
-                        const cardHtml = `
-                            <div class="bg-slate-800 border ${cardBorder} p-6 rounded-xl shadow-lg transition duration-300 flex flex-col justify-between">
-                                <div>
-                                    <div class="flex justify-between items-start mb-4">
-                                        <h2 class="text-2xl font-bold text-slate-100">${item.wilaya}</h2>
-                                        <span class="text-xs px-2.5 py-1 rounded-full border ${badgeColor} font-extrabold">
-                                            ${item.kiwango_cha_hatari_utabiri}
-                                        </span>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <p class="text-sm text-slate-400">Idadi ya Matukio ya sasa:</p>
-                                        <p class="text-3xl font-black text-indigo-400">${item.idadi_ya_matukio}</p>
-                                    </div>
-                                </div>
-
-                                <div class="my-4">
-                                    <a href="${googleMapsUrl}" target="_blank" 
-                                        class="w-full inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-md text-sm font-bold transition text-center gap-2">
-                                        Fungua Eneo Kwenye Google Maps 🧭📍
-                                    </a>
-                                </div>
-
-                                <div class="mt-2 pt-4 border-t border-slate-700">
-                                    <p class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">Ushauri wa Mfumo:</p>
-                                    <p class="text-sm text-slate-300 bg-slate-900/50 p-2 rounded border border-slate-700/50 italic">
-                                        "${item.ushauri_kwa_polisi}"
-                                    </p>
-                                </div>
-                            </div>
-                        `;
-                        predictionGrid.innerHTML += cardHtml;
-                    });
-
-                    loadingState.classList.add('hidden');
-                    predictionGrid.classList.remove('hidden');
-
-                } else {
-                    loadingState.innerHTML = "<p class='text-red-400'>Kosa: Imeshindwa kusoma vizuri muundo wa data za seva.</p>";
+            if (response.ok && jsonResult.status === "Success") {
+                
+                // REKEBISHO 1: Jina la kigezo limeunganishwa
+                const idadiYaSasaYaRipoti = jsonResult.reports.length;
+                
+                if (!niMaraYaKwanza && idadiYaSasaYaRipoti > idadiYaZamaniYaRipoti) {
+                    // Ripoti mpya imeingia! Piga sauti ya beeper/king'ora cha kivinjari
+                    pigaKingoraChaPolisi();
+                    alert("⚠️ TAHADHARI YA DHARURA: Ripoti mpya ya uhalifu imepokelewa hivi sasa! Kagua meza ya matukio.");
                 }
-            } catch (error) {
-                loadingState.innerHTML = `<p class='text-red-400'>Tatizo la Muunganisho: Hakikisha Seva ya Django ipo hai. <br><span class='text-xs text-slate-500'>${error}</span></p>`;
-            }
-        }
+                
+                // Sasisha vigezo vyetu vya ukaguzi
+                idadiYaZamaniYaRipoti = idadiYaSasaYaRipoti;
+                niMaraYaKwanza = false;
 
-        window.onload = fetchPredictionData;
-    </script>
+                // 1. JAZA KADI ZA UTABIRI
+                predictionGrid.innerHTML = "";
+                jsonResult.predictions.forEach(item => {
+                    const isHighRisk = item.kiwango_cha_hatari_utabiri.includes("HIGH");
+                    const badgeColor = isHighRisk ? "bg-red-500/20 text-red-400 border-red-500/50" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+                    predictionGrid.innerHTML += `
+                        <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold">${item.wilaya}</h3>
+                                <span class="text-xs px-2 py-0.5 rounded-full border ${badgeColor} font-bold">${item.kiwango_cha_hatari_utabiri}</span>
+                            </div>
+                            <p class="text-2xl font-black text-indigo-400 mb-2">${item.idadi_ya_matukio} <span class="text-xs text-slate-500 font-normal">matukio</span></p>
+                            <p class="text-xs text-slate-300 italic bg-slate-900/50 p-2 rounded border border-slate-700/30">"${item.ushauri_kwa_polisi}"</p>
+                        </div>
+                    `;
+                });
+
+                // 2. JAZA MEZA YA MATUKIO
+                tableBody.innerHTML = "";
+                jsonResult.reports.forEach(report => {
+                    // REKEBISHO 2: Mabano ya ${report.latitude} yamerekebishwa hapa
+                    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}`;
+                    const imageLink = report.evidence_url ? `<a href="${baseUrl}${report.evidence_url}" target="_blank" class="text-indigo-400 hover:underline">Angalia Picha 🖼️</a>` : "<span class='text-slate-500'>Hakuna</span>";
+                    
+                    let statusColor = "text-yellow-400";
+                    if(report.status === "RESOLVED") statusColor = "text-emerald-400";
+                    if(report.status === "UNDER_INVESTIGATION") statusColor = "text-orange-400";
+
+                    tableBody.innerHTML += `
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-4 font-mono font-bold text-slate-400">#${report.id}</td>
+                            <td class="p-4 text-slate-400">${report.tarehe}</td>
+                            <td class="p-4 font-semibold">${report.district_name}</td>
+                            <td class="p-4 max-w-xs truncate" title="${report.description}">${report.description}</td>
+                            <td class="p-4">${imageLink}</td>
+                            <td class="p-4">
+                                <a href="${mapsUrl}" target="_blank" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs transition inline-block">Fungua 📍</a>
+                            </td>
+                            <td class="p-4">
+                                <select onchange="badilishaStatus(${report.id}, this.value)" 
+                                    class="bg-slate-900 border border-slate-700 p-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold ${statusColor}">
+                                    <option value="NEW" ${report.status === 'NEW' ? 'selected' : ''}>NEW 🟢</option>
+                                    <option value="UNDER_INVESTIGATION" ${report.status === 'UNDER_INVESTIGATION' ? 'selected' : ''}>Inachunguzwa 🟡</option>
+                                    <option value="RESOLVED" ${report.status === 'RESOLVED' ? 'selected' : ''}>Imeisha 🔵</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                loadingState.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+            }
+        } catch (error) {
+            loadingState.innerHTML = `<p class='text-red-400'>Kosa la Muunganisho: Seva haipatikani. ${error}</p>`;
+        }
+    }
+
+    // FUNCTION YA KUTENGENEZA SAUTI YA KING'ORA (AUDIO SYNTHESIZER)
+    function pigaKingoraChaPolisi() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
+        oscillator.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5); 
+        
+        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1); 
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1);
+    }
+
+    async function badilishaStatus(reportId, statusMpya) {
+        try {
+            const response = await fetch(`${baseUrl}/api/reports/${reportId}/`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: statusMpya })
+            });
+            if (response.ok) {
+                alert(`Status imesasishwa!`);
+                fetchDashboardData();
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    // AMRI YA WAKATI HALISI (POLLING)
+    window.onload = () => {
+        fetchDashboardData();
+        setInterval(fetchDashboardData, 10000); 
+    };
+</script>
 </body>
 </html>
