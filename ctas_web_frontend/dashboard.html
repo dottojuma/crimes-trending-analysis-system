@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTAS - Jopo la Utabiri la Polisi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-900 text-white font-sans min-h-screen p-6">
+
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-b border-slate-700 pb-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-extrabold text-indigo-400 tracking-wide">CTAS - POLICE ANALYTICS</h1>
+            <p class="text-slate-400 text-sm mt-1">Mfumo wa Kitaalamu wa Utabiri na Mwenendo wa Uhalifu - Dar es Salaam</p>
+        </div>
+        <button onclick="fetchPredictionData()" class="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md font-bold transition cursor-pointer">
+            Refresh Data 🔄
+        </button>
+    </div>
+
+    <div class="max-w-7xl mx-auto">
+        
+        <div id="loadingState" class="text-center py-12">
+            <p class="text-xl text-slate-400 animate-pulse">Inasoma data za utabiri kutoka kwenye AI Engine...</p>
+        </div>
+
+        <div id="predictionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            </div>
+    </div>
+
+    <script>
+        /// KAZI KUU (FUNCTION): KUCHUKUA UTABIRI KUTOKA DJANGO API
+        /// 
+        /// Hii function inapiga hodi kwenye seva yetu, inachukua takwimu za wilaya,
+        /// na kuzitengenezea kadi za HTML kulingana na kiwango cha hatari kilichopigiwa hesabu.
+        async function fetchPredictionData() {
+            const loadingState = document.getElementById('loadingState');
+            const predictionGrid = document.getElementById('predictionGrid');
+            
+            // 1. Washa Loading, ficha Grid
+            loadingState.classList.remove('hidden');
+            predictionGrid.classList.add('hidden');
+            predictionGrid.innerHTML = ""; // Safisha kadi za zamani
+
+            // Anwani ya API yetu ya Prediction niliyoiandika Backend
+            const apiUrl = "http://127.0.0.1:8000/api/prediction/";
+
+            try {
+                // 2. OMBA DATA (HTTP GET REQUEST)
+                const response = await fetch(apiUrl);
+                const jsonResult = await response.json();
+
+                if (response.ok && jsonResult.status === "Success") {
+                    const predictions = jsonResult.data;
+
+                    // 3. KAGUA KAMA KUNA DATA: Kama database haina ripoti hata moja
+                    if (predictions.length === 0) {
+                        loadingState.innerHTML = "<p class='text-slate-400'>Hakuna data za ripoti zilizopatikana kwenye database kwa sasa.</p>";
+                        return;
+                    }
+
+                    // 4. CHOPOLA DATA (LOOPING): Pitia kila wilaya na utengeneze kadi yake
+                    predictions.forEach(item => {
+                        // Kupanga rangi kulingana na utabiri wa kiwango cha hatari (HIGH = Nyekundu, MEDIUM = Njano)
+                        const isHighRisk = item.kiwango_cha_hatari_utabiri.includes("HIGH");
+                        const badgeColor = isHighRisk ? "bg-red-500/20 text-red-400 border-red-500/50" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+                        const cardBorder = isHighRisk ? "border-red-500/30 hover:border-red-500/60" : "border-slate-700 hover:border-slate-500";
+
+                        // Template ya kadi ya HTML
+                        const cardHtml = `
+                            <div class="bg-slate-800 border ${cardBorder} p-6 rounded-xl shadow-lg transition duration-300 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h2 class="text-2xl font-bold text-slate-100">${item.wilaya}</h2>
+                                        <span class="text-xs px-2.5 py-1 rounded-full border ${badgeColor} font-extrabold">
+                                            ${item.kiwango_cha_hatari_utabiri}
+                                        </span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <p class="text-sm text-slate-400">Idadi ya Matukio ya sasa:</p>
+                                        <p class="text-3xl font-black text-indigo-400">${item.idadi_ya_matukio}</p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-4 border-t border-slate-700">
+                                    <p class="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">Ushauri wa Mfumo:</p>
+                                    <p class="text-sm text-slate-300 bg-slate-900/50 p-2 rounded border border-slate-700/50 italic">
+                                        "${item.ushauri_kwa_polisi}"
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                        // Ongeza kadi hii kwenye grid yetu
+                        predictionGrid.innerHTML += cardHtml;
+                    });
+
+                    // Zima Loading, Washa Grid ionekane
+                    loadingState.classList.add('hidden');
+                    predictionGrid.classList.remove('hidden');
+
+                } else {
+                    loadingState.innerHTML = "<p class='text-red-400'>Kosa: Imeshindwa kusoma vizuri muundo wa data za seva.</p>";
+                }
+            } catch (error) {
+                loadingState.innerHTML = `<p class='text-red-400'>Tatizo la Muunganisho: Hakikisha Seva ya Django ipo hai. <br><span class='text-xs text-slate-500'>${error}</span></p>`;
+            }
+        }
+
+        // AMRI YA KWANZA: Ukurasa ukifunguka tu kwa mara ya kwanza, pakia data mara moja
+        window.onload = fetchPredictionData;
+    </script>
+</body>
+</html>
