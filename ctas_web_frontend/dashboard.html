@@ -45,17 +45,17 @@
                 <h2 class="text-xl font-bold text-slate-300 mb-4 border-l-4 border-emerald-500 pl-2">Orodha na Udhibiti wa Ripoti Zilizowasilishwa</h2>
                 <div class="overflow-x-auto bg-slate-800 rounded-xl border border-slate-700">
                     <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-700/50 border-b border-slate-700 text-slate-300 text-sm uppercase">
-                                <th class="p-4">ID</th>
-                                <th class="p-4">Tarehe</th>
-                                <th class="p-4">Wilaya</th>
-                                <th class="p-4">Maelezo ya Tukio</th>
-                                <th class="p-4">Ushahidi</th>
-                                <th class="p-4">Ramani</th>
-                                <th class="p-4">Hatua ya Tukio (Status)</th>
-                            </tr>
-                        </thead>
+                       <thead class="bg-slate-900 border-b border-slate-800">
+    <tr class="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+        <th class="p-4 text-left">ID Namba</th>
+        <th class="p-4 text-left">Tarehe</th>
+        <th class="p-4 text-left">AI CV ALERT 🖼️ 🤖</th> <th class="p-4 text-left">Wilaya</th>
+        <th class="p-4 text-left">Maelezo (Description)</th>
+        <th class="p-4 text-left">Picha (Evidence)</th>
+        <th class="p-4 text-left">Ramani (Maps)</th>
+        <th class="p-4 text-left">Hali (Status)</th>
+    </tr>
+</thead>
                         <tbody id="reportsTableBody" class="divide-y divide-slate-700/50 text-sm"></tbody>
                     </table>
                 </div>
@@ -66,193 +66,210 @@
 
    <script>
     const baseUrl = "http://127.0.0.1:8000";
-let idadiYaZamaniYaRipoti = 0;
-let niMaraYaKwanza = true;
+    let idadiYaZamaniYaRipoti = 0;
+    let niMaraYaKwanza = true;
 
-// 1. DAWA YA FIREFOX: Angalia kwanza kama token ipo kwenye URL Link
-const urlParams = new URLSearchParams(window.location.search);
-let token = urlParams.get('token');
-
-// 2. Kama haipo kwenye URL, jaribu kuisoma kwenye localStorage (kwa ajili ya Chrome)
-if (!token) {
-    token = localStorage.getItem('policeToken');
-}
-
-// 3. UKAGUZI WA ULINZI: Kama kote haipo, mfukuze!
-if (!token) {
-    alert("⚠️ Hauna ruhusa ya kuona ukurasa huu! Tafadhali log in kwanza.");
-    window.location.href = "login.html";
-}
-
-// Kodi zingine zote za fetchDashboardData() na maisha mengine yanaendelea vilevile...
-
-        async function fetchDashboardData() {
-            const loadingState = document.getElementById('loadingState');
-            const mainContent = document.getElementById('mainContent');
-            const predictionGrid = document.getElementById('predictionGrid');
-            const tableBody = document.getElementById('reportsTableBody');
-
-            try {
-                // MAHUSUSI: Tunasafirisha Token kwenye Authorization Header!
-                const response = await fetch(`${baseUrl}/api/prediction/`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Token ${token}`, // <--- TUNAWASILISHA FUNGUO YA GETI
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const jsonResult = await response.json();
-
-                if (response.ok && jsonResult.status === "Success") {
-                    const idadiYaSasaYaRipoti = jsonResult.reports.length;
-                    
-                    if (!niMaraYaKwanza && idadiYaSasaYaRipoti > idadiYaZamaniYaRipoti) {
-                        pigaKingoraChaPolisi();
-                        alert("⚠️ TAHADHARI YA DHARURA: Ripoti mpya ya uhalifu imepokelewa hivi sasa!");
-                    }
-                    
-                    idadiYaZamaniYaRipoti = idadiYaSasaYaRipoti;
-                    niMaraYaKwanza = false;
-
-                    // JAZA KADI ZA UTABIRI
-                    predictionGrid.innerHTML = "";
-                    jsonResult.predictions.forEach(item => {
-                        const isHighRisk = item.kiwango_cha_hatari_utabiri.includes("HIGH");
-                        const badgeColor = isHighRisk ? "bg-red-500/20 text-red-400 border-red-500/50" : "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-                        predictionGrid.innerHTML += `
-                            <div class="bg-slate-800 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-bold">${item.wilaya}</h3>
-                                    <span class="text-xs px-2 py-0.5 rounded-full border ${badgeColor} font-bold">${item.kiwango_cha_hatari_utabiri}</span>
-                                </div>
-                                <p class="text-2xl font-black text-indigo-400 mb-2">${item.idadi_ya_matukio} <span class="text-xs text-slate-500 font-normal">matukio</span></p>
-                                <p class="text-xs text-slate-300 italic bg-slate-900/50 p-2 rounded border border-slate-700/30">"${item.ushauri_kwa_polisi}"</p>
-                            </div>
-                        `;
-                    });
-
-                    // JAZA MEZA YA MATUKIO
-                    tableBody.innerHTML = "";
-                    jsonResult.reports.forEach(report => {
-                        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}`;
-                        const imageLink = report.evidence_url ? `<a href="${baseUrl}${report.evidence_url}" target="_blank" class="text-indigo-400 hover:underline">Angalia Picha 🖼️</a>` : "<span class='text-slate-500'>Hakuna</span>";
-                        
-                        let statusColor = "text-yellow-400";
-                        if(report.status === "RESOLVED") statusColor = "text-emerald-400";
-                        if(report.status === "UNDER_INVESTIGATION") statusColor = "text-orange-400";
-
-                        tableBody.innerHTML += `
-                            <tr class="hover:bg-slate-800/50 transition">
-                                <td class="p-4 font-mono font-bold text-slate-400">#${report.id}</td>
-                                <td class="p-4 text-slate-400">${report.tarehe}</td>
-                                <td class="p-4 font-semibold">${report.district_name}</td>
-                                <td class="p-4 max-w-xs truncate" title="${report.description}">${report.description}</td>
-                                <td class="p-4">${imageLink}</td>
-                                <td class="p-4">
-                                    <a href="${mapsUrl}" target="_blank" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs transition inline-block">Fungua 📍</a>
-                                </td>
-                                <td class="p-4">
-                                    <select onchange="badilishaStatus(${report.id}, this.value)" 
-                                        class="bg-slate-900 border border-slate-700 p-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold ${statusColor}">
-                                        <option value="NEW" ${report.status === 'NEW' ? 'selected' : ''}>NEW 🟢</option>
-                                        <option value="UNDER_INVESTIGATION" ${report.status === 'UNDER_INVESTIGATION' ? 'selected' : ''}>Inachunguzwa 🟡</option>
-                                        <option value="RESOLVED" ${report.status === 'RESOLVED' ? 'selected' : ''}>Imeisha 🔵</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    loadingState.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
-                }
-            } catch (error) {
-                loadingState.innerHTML = `<p class='text-red-400'>Kosa la Muunganisho: Seva haipatikani.</p>`;
-                console.error(error);
-            }
-        }
-
-        function pigaKingoraChaPolisi() {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
-            oscillator.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5); 
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1); 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 1);
-        }
-
-        async function badilishaStatus(reportId, statusMpya) {
-            try {
-                const response = await fetch(`${baseUrl}/api/reports/${reportId}/`, {
-                    method: 'PATCH',
-                    headers: { 
-                        'Authorization': `Token ${token}`, // <--- TUNATUMA TOKEN PIA KWENYE UPDATE STATUS
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify({ status: statusMpya })
-                });
-                if (response.ok) {
-                    alert(`Status imesasishwa!`);
-                    fetchDashboardData();
-                }
-            } catch (error) { console.error(error); }
-        }
-
-        // Kazi ya Logout (Kufuta ufunguo na kuondoka)
-        function tekelezaLogout() {
-            localStorage.clear(); // Safisha siri zote kwenye kivinjari
-            alert("Umetoka kwenye mfumo!");
-            window.location.href = "login.html";
-        }
-
-        window.onload = () => {
-            fetchDashboardData();
-            setInterval(fetchDashboardData, 10000); 
-        };
-        async function tekelezaLogout() {
-    // 1. Uliza kwanza askari kama ana uhakika wa kuondoka
-    if (!confirm("Je, una uhakika unataka kuondoka kwenye mfumo wa doria?")) {
-        return;
-    }
-
-    // 2. Soma Token iliyopo kwa sasa ili tuiambie Django iifute kabisa
-    // Kumbuka: Kama ulitumia ile mbinu ya URL, tunasoma kutoka kwenye URL au localStorage
+    // 1. DAWA YA FIREFOX: Angalia kwanza kama token ipo kwenye URL Link
     const urlParams = new URLSearchParams(window.location.search);
-    let ufunguo = urlParams.get('token') || localStorage.getItem('policeToken');
+    let token = urlParams.get('token');
 
-    try {
-        // 3. Tuma taarifa Django ili kuifuta Token kwenye database kwa usalama zaidi
-        const response = await fetch("http://127.0.0.1:8000/api/auth/logout/", {
-            method: "POST",
-            headers: {
-                "Authorization": `Token ${ufunguo}`,
-                "Content-Type": "application/json"
-            }
-        });
+    // 2. Kama haipo kwenye URL, jaribu kuisoma kwenye localStorage (kwa ajili ya Chrome)
+    if (!token) {
+        token = localStorage.getItem('policeToken');
+    }
 
-        // 4. Hata kama seva imeshajibu au imegoma, sisi tunasafisha kivinjari chetu hapa nyumbani
-        localStorage.removeItem('policeToken');
-        localStorage.removeItem('policeUsername');
-        
-        alert("🔒 Umetoka kwenye mfumo salama. Kazi njema Kamanda!");
-        
-        // 5. Mtupilie mbali askari arudi kwenye ukurasa wa Login
-        window.location.href = "login.html";
-
-    } catch (error) {
-        console.error("Kosa la mtandao wakati wa logout:", error);
-        // Kama mtandao umekata, bado tunamsafisha kwa usalama wake
-        localStorage.removeItem('policeToken');
+    // 3. UKAGUZI WA ULINZI: Kama kote haipo, mfukuze!
+    if (!token) {
+        alert("⚠️ Hauna ruhusa ya kuona ukurasa huu! Tafadhali log in kwanza.");
         window.location.href = "login.html";
     }
-}
+
+    async function fetchDashboardData() {
+        const loadingState = document.getElementById('loadingState');
+        const mainContent = document.getElementById('mainContent');
+        const predictionGrid = document.getElementById('predictionGrid');
+        const tableBody = document.getElementById('reportsTableBody');
+
+        try {
+            // MAHUSUSI: Tunasafirisha Token kwenye Authorization Header!
+            const response = await fetch(`${baseUrl}/api/prediction/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Token ${token}`, // <--- TUNAWASILISHA FUNGUO YA GETI
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const jsonResult = await response.json();
+
+            if (response.ok && jsonResult.status === "Success") {
+                const idadiYaSasaYaRipoti = jsonResult.reports.length;
+                
+                if (!niMaraYaKwanza && idadiYaSasaYaRipoti > idadiYaZamaniYaRipoti) {
+                    pigaKingoraChaPolisi();
+                    alert("⚠️ TAHADHARI YA DHARURA: Ripoti mpya ya uhalifu imepokelewa hivi sasa!");
+                }
+                
+                idadiYaZamaniYaRipoti = idadiYaSasaYaRipoti;
+                niMaraYaKwanza = false;
+
+                // 4. JAZA KADI ZA UTABIRI WA MACHINE LEARNING (LINI, WAPI, KWA NYINI) 🤖🔮
+predictionGrid.innerHTML = "";
+jsonResult.predictions.forEach(item => {
+    predictionGrid.innerHTML += `
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between shadow-2xl hover:border-slate-700 transition duration-300">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">📍 ENEO (WAPI)</span>
+                    <h3 class="text-2xl font-black text-white mt-0.5">${item.wapi}</h3>
+                </div>
+                <span class="text-xs px-3 py-1 rounded-lg border font-black ${item.color_tag}">
+                    ${item.kiwango_cha_hatari}
+                </span>
+            </div>
+
+            <div class="flex justify-between items-center bg-slate-950/60 px-4 py-2 rounded-xl border border-slate-800/40 mb-4">
+                <p class="text-xl font-black text-indigo-400">${item.idadi_ya_matukio} <span class="text-xs text-slate-500 font-normal">matukio yaliyopo</span></p>
+                <span class="text-[11px] text-indigo-300 font-mono bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
+                    AI Accuracy: ${item.ai_confidence} 🤖
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <p class="text-[11px] text-amber-400 font-bold tracking-wide flex items-center gap-1">
+                    🕒 LINI (SAA ZA HATARI):
+                </p>
+                <p class="text-sm text-slate-200 font-medium mt-0.5 pl-4 border-l-2 border-amber-500/50">
+                    ${item.lini_saa_za_hatari}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-[11px] text-indigo-400 font-bold tracking-wide flex items-center gap-1">
+                    🧠 KWA NINI (AI ANALYTICS):
+                </p>
+                <p class="text-xs text-slate-400 bg-slate-950 p-3 rounded-xl border border-slate-800/80 mt-1 italic">
+                    "${item.kwa_nini_sababu}"
+                </p>
+            </div>
+        </div>
+    `;
+});
+
+                // 5. JAZA MEZA YA MATUKIO (Kutumia Computer Vision AI)
+tableBody.innerHTML = "";
+jsonResult.reports.forEach(report => {
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}`;
+    const imageLink = report.evidence_url ? `<a href="${baseUrl}${report.evidence_url}" target="_blank" class="text-indigo-400 hover:underline">Angalia Picha 🖼️</a>` : "<span class='text-slate-500'>Hakuna</span>";
+    
+    let statusColor = "text-yellow-400";
+    if(report.status === "RESOLVED") statusColor = "text-emerald-400";
+    if(report.status === "UNDER_INVESTIGATION") statusColor = "text-orange-400";
+
+    // KUTENGENEZA CHAPA YA RANGI YA COMPUTER VISION
+    // Tunaipamba kulingana na cv_urgency_score iliyotoka Django
+    let cvAlertClass = "border border-slate-700/50 text-slate-400 bg-slate-800/50"; // Default LOW
+    if(report.cv_urgency_score === 3) cvAlertClass = "border border-red-500/50 text-red-300 bg-red-500/10"; // CRITICAL
+    if(report.cv_urgency_score === 2) cvAlertClass = "border border-yellow-500/50 text-yellow-300 bg-yellow-500/10"; // HIGH
+
+    tableBody.innerHTML += `
+        <tr class="hover:bg-slate-800/30 transition border-b border-slate-800">
+            <td class="p-4 font-mono font-bold text-slate-400">#${report.id}</td>
+            <td class="p-4 text-slate-400">${report.tarehe}</td>
+            
+            <td class="p-4">
+                <span class="text-[10px] px-2 py-0.5 rounded font-black tracking-wide ${cvAlertClass}" title="${report.cv_analytics}">
+                    ${report.cv_alert} 🤖🖼️
+                </span>
+            </div>
+
+            <td class="p-4 font-semibold">${report.district_name}</td>
+            <td class="p-4 max-w-xs truncate" title="${report.description}">${report.description}</td>
+            <td class="p-4">${imageLink}</td>
+            <td class="p-4">
+                <a href="${mapsUrl}" target="_blank" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs transition inline-block">Fungua 📍</a>
+            </td>
+            <td class="p-4">
+                <select onchange="badilishaStatus('${report.id}', this.value)" 
+                    class="bg-slate-900 border border-slate-700 p-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold ${statusColor}">
+                    <option value="NEW" ${report.status === 'NEW' ? 'selected' : ''}>NEW 🟢</option>
+                    <option value="UNDER_INVESTIGATION" ${report.status === 'UNDER_INVESTIGATION' ? 'selected' : ''}>Inachunguzwa 🟡</option>
+                    <option value="RESOLVED" ${report.status === 'RESOLVED' ? 'selected' : ''}>Imeisha 🔵</option>
+                </select>
+            </td>
+        </tr>
+    `;
+});
+                loadingState.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+            }
+        } catch (error) {
+            loadingState.innerHTML = `<p class='text-red-400'>Kosa la Muunganisho: Seva haipatikani.</p>`;
+            console.error(error);
+        }
+    }
+
+    function pigaKingoraChaPolisi() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
+        oscillator.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5); 
+        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1); 
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1);
+    }
+
+    async function badilishaStatus(reportId, statusMpya) {
+        try {
+            const response = await fetch(`${baseUrl}/api/reports/${reportId}/`, {
+                method: 'PATCH',
+                headers: { 
+                    'Authorization': `Token ${token}`,
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ status: statusMpya })
+            });
+            if (response.ok) {
+                alert(`Status imesasishwa!`);
+                fetchDashboardData();
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    // 6. FUNCTION MOJA THABITI YA LOGOUT (Ufunguzi Safi na Salama)
+    async function tekelezaLogout() {
+        if (!confirm("Je, una uhakika unataka kuondoka kwenye mfumo wa doria?")) {
+            return;
+        }
+
+        try {
+            // Tuma taarifa Django ili kuifuta Token kwenye database kwa usalama
+            await fetch(`${baseUrl}/api/auth/logout/`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Token ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+        } catch (error) {
+            console.error("Kosa la mtandao wakati wa logout:", error);
+        }
+
+        // Futa kumbukumbu zote za ufunguo kienyeji na rudi Login
+        localStorage.clear();
+        alert("🔒 Umetoka kwenye mfumo salama. Kazi njema Kamanda!");
+        window.location.href = "login.html";
+    }
+
+    window.onload = () => {
+        fetchDashboardData();
+        setInterval(fetchDashboardData, 10000); 
+    };
 </script>
 </body>
 </html>

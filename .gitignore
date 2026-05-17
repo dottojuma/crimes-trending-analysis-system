@@ -1,0 +1,17 @@
+# Puuzia database ya majaribio ya ndani ya kompyuta
+db.sqlite3
+
+# Puuzia mafile ya Python yaliyofungwa (Compiled files)
+__pycache__/
+*.pyc
+
+# Puuzia mazingira ya mtandao (Virtual Environment)
+myenv/
+venv/
+env/
+
+# Puuzia mipangilio ya VS Code ya ndani
+.vscode/
+
+# Puuzia mafile ya siri yenye password (Environment variables)
+.env

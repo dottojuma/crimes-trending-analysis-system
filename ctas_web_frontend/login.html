@@ -28,7 +28,7 @@
                 <input type="password" id="password" required
                     class="w-full p-3 bg-slate-950 border border-slate-800 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-200">
             </div>
-
+<div id="errorDiv" class="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-xl text-xs text-center hidden mb-4"></div>
             <button type="submit" id="loginBtn"
                 class="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-md font-bold transition duration-200 cursor-pointer text-sm tracking-wide">
                 Ingia Kwenye Jopo 🔓
@@ -38,55 +38,68 @@
         <div id="errorMessage" class="hidden mt-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-md text-center font-semibold"></div>
     </div>
 
-    <script>
-        const form = document.getElementById('loginForm');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorDiv = document.getElementById('errorMessage');
+   <script>
+    const loginForm = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('errorDiv');
+    const loginBtn = document.getElementById('loginBtn');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            errorDiv.classList.add('hidden');
-            loginBtn.innerText = "Inahakiki...";
-            loginBtn.disabled = true;
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            const usernameInput = document.getElementById('username').value;
-            const passwordInput = document.getElementById('password').value;
+        // 1. Chukua data kutoka kwenye fomu
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-            try {
-                const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    // ONDOA credentials ya mwanzo, haihitajiki hapa
-                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
-                });
+        // Maandalizi ya kitufe wakati wa kupakia
+        loginBtn.innerText = "Inahakiki... ⏳";
+        loginBtn.disabled = true;
+        errorDiv.classList.add('hidden');
 
-                const data = await response.json();
+        try {
+            // 2. Tuma data kwenye seva ya Django
+            const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
 
-               // TAFUTA SEHEMU HII KWENYE login.html NA UIBADILISHE IWE HIVI:
+            const data = await response.json();
 
-if (response.ok && data.status === "Success") {
-    // Tunatunza bado kwa ajili ya usalama wa baadae
-    localStorage.setItem('policeToken', data.token);
-    
-    alert(`Karibu Kamanda, ${data.user}! Mfumo umefunguliwa.`);
-    
-    // DAWA YA UHAKIKA: Tunatupa Token kwenye URL yenyewe!
-    window.location.href = `dashboard.html?token=${data.token}`; 
-}
+            // 3. Hakiki kama login imefanikiwa
+            if (response.ok && data.status === "Success") {
+                // Hifadhi Token na Username kwenye kumbukumbu ya kivinjari
+                localStorage.setItem('policeToken', data.token);
+                localStorage.setItem('policeUsername', data.user);
+                
+                alert("Umeingia kwa mafanikio!");
 
- else {
-    errorDiv.innerText = data.message || "Ufikiaji umekataliwa.";
-    errorDiv.classList.remove('hidden');
-}
-            } catch (error) {
-                errorDiv.innerText = "Kosa la kiufundi: Imeshindwa kuwasiliana na seva.";
+                // MBINU YA KISASA YA UTAMBUZI (AUTOMATED ROUTING):
+                if (data.is_admin === true) {
+                    // Kama ni Admin, mrushe moja kwa moja kwenye Django Admin Center!
+                    window.location.href = "http://127.0.0.1:8000/admin/";
+                } else {
+                    // Kama ni askari wa kawaida, mpeleke kwenye Dashboard ya doria
+                    window.location.href = "dashboard.html";
+                }
+            } else {
+                // Kama seva imekataa (Password mbaya au huna mamlaka)
+                errorDiv.innerText = data.message || "Ufikiaji umekataliwa.";
                 errorDiv.classList.remove('hidden');
-                console.error(error);
-            } finally {
-                loginBtn.innerText = "Ingia Kwenye Jopo 🔓";
-                loginBtn.disabled = false;
             }
-        });
-    </script>
+
+        } catch (error) {
+            // Kama seva imezimika au kuna mtandao mbovu
+            errorDiv.innerText = "Kosa la kiufundi: Imeshindwa kuwasiliana na seva.";
+            errorDiv.classList.remove('hidden');
+            console.error(error);
+        } finally {
+            // Rejesha kitufe kwenye hali ya kawaida
+            loginBtn.innerText = "Ingia Kwenye Jopo 🔓";
+            loginBtn.disabled = false;
+        }
+    });
+</script>
 </body>
 </html>

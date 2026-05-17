@@ -3,162 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTAS - Kiolesura cha Mwananchi</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>CTAS - Mlango Mkuu wa Mfumo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
 
-    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-xl">
-        
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-indigo-900">CTAS - Ripoti Tukio la Uhalifu</h1>
-            <p class="text-gray-600 text-sm mt-1">Jaza fomu hii kwa uangalifu ili kutuma taarifa na picha ya ushahidi kwa siri kwenda Jeshi la Polisi.</p>
+    <header class="border-b border-slate-900 bg-slate-900/50 backdrop-blur py-4 px-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🛡️</span>
+            <h1 class="text-xl font-black tracking-wider text-indigo-400">CTAS AUTOMATION</h1>
+        </div>
+        <div class="flex gap-4 text-xs font-bold">
+            <button onclick="funguaModal('aboutModal')" class="text-slate-400 hover:text-white transition">Kuhusu Sisi (About)</button>
+            <button onclick="funguaModal('contactModal')" class="text-slate-400 hover:text-white transition">Mawasiliano (Contacts)</button>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center">
+        <div class="mb-8">
+            <span class="text-6xl animate-pulse inline-block mb-4">🔮</span>
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
+                CRIME TRENDS & ANALYSIS SYSTEM
+            </h2>
+            <p class="text-slate-400 text-base md:text-lg max-w-xl mx-auto">
+                Karibu kwenye mfumo wa kisasa wa kuripoti uhalifu, ulinzi shirikishi, na utabiri wa usalama wa jamii kwa kutumia Machine Learning na AI.
+            </p>
         </div>
 
-        <form id="crimeReportForm" class="space-y-4">
+        <div class="grid md:grid-cols-2 gap-6 w-full max-w-2xl mt-4">
             
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Maelezo ya Tukio (Nini kimetokea?)</label>
-                <textarea id="description" rows="4" required 
-                    class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    placeholder="Andika maelezo kamili ya tukio hapa..."></textarea>
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Chagua Wilaya Uliyopo</label>
-                <select id="districtId" required
-                    class="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium text-gray-700">
-                    <option value="" disabled selected>-- Chagua Wilaya --</option>
-                    <option value="1">Ubungo</option>
-                    <option value="2">Kinondoni</option>
-                    <option value="3">Ilala</option>
-                    <option value="4">Temeke</option>
-                    <option value="5">Kigamboni</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Aina ya Uhalifu/Tukio</label>
-                <select id="crimeTypeId" required
-                    class="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium text-gray-700">
-                    <option value="" disabled selected>-- Chagua Aina ya Tukio --</option>
-                    <option value="1">Wizi / Unyang'anyi</option>
-                    <option value="2">Uvunjaji wa Nyumba</option>
-                    <option value="3">Ushambulizi / Kupigana</option>
-                    <option value="4">Biashara Haramu</option>
-                    <option value="5">Nyinginezo</option>
-                </select>
-            </div>
-
-            <div class="grid grid-cols-1 gap-2">
-                <label class="block text-sm font-semibold text-gray-700">Eneo la Tukio (GPS Coordinates)</label>
-                <button type="button" onclick="pataEneoLangu()" 
-                    class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-md font-bold text-xs transition mb-2 cursor-pointer flex items-center justify-center gap-1 w-full">
-                    Soma GPS ya Eneo Langu Kiotomatiki 📍
-                </button>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1">GPS Latitude</label>
-                        <input type="number" step="any" id="latitude" required readonly
-                            class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none"
-                            placeholder="Inasoma...">
+            <a href="mwananchi.html" class="group bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-6 rounded-2xl text-left transition duration-300 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-indigo-600 group-hover:text-white transition">
+                        🇹🇿
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1">GPS Longitude</label>
-                        <input type="number" step="any" id="longitude" required readonly
-                            class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none"
-                            placeholder="Inasoma...">
-                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Lango la Mwananchi</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Toa ripoti ya uhalifu au dharura kwa haraka, weka ushahidi wa picha, na fuatilia hatua za kiuchunguzi zilizochukuliwa na Polisi.
+                    </p>
                 </div>
-            </div>
+                <div class="mt-6 text-xs text-indigo-400 font-bold group-hover:underline flex items-center gap-1">
+                    Fungua Sehemu ya Raia ➔
+                </div>
+            </a>
 
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Picha ya Ushahidi (Hiari)</label>
-                <input type="file" id="evidenceImage" accept="image/*"
-                    class="w-full p-2 border border-gray-300 rounded-md text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-            </div>
+            <a href="login.html" class="group bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-6 rounded-2xl text-left transition duration-300 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
+                        🔒
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Portal ya Maafisa (Staff)</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Maalum kwa Askari wa Doria na Wakuu wa Vituo (Admin). Ingia hapa kuona Dashboard ya AI, kukagua ushahidi, na kudhibiti mifumo.
+                    </p>
+                </div>
+                <div class="mt-6 text-xs text-emerald-400 font-bold group-hover:underline flex items-center gap-1">
+                    Ingia Kwenye Kazi (Login) ➔
+                </div>
+            </a>
 
-            <button type="submit" id="submitBtn"
-                class="w-full bg-indigo-900 text-white p-3 rounded-md font-bold hover:bg-indigo-800 transition duration-200 cursor-pointer">
-                Tuma Ripoti Polisi
-            </button>
-        </form>
+        </div>
+    </main>
+
+    <div id="aboutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl relative">
+            <button onclick="fungaModal('aboutModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg">✕</button>
+            <h3 class="text-2xl font-black text-indigo-400 mb-4 flex items-center gap-2">🔮 Kuhusu Mfumo (CTAS)</h3>
+            <div class="text-sm text-slate-300 space-y-3 leading-relaxed">
+                <p>
+                    <strong>Crime Trends & Analysis System (CTAS)</strong> ni mfumo thabiti wa kiusalama ulioundwa kurahisisha mawasiliano kati ya raia na Jeshi la Polisi.
+                </p>
+                <p>
+                    Mfumo huu unatumia teknolojia ya kisasa ya <strong>Machine Learning (Random Forest)</strong> kufanya utabiri wa maeneo yenye dharura, masaa ya hatari, na kutoa ushauri wa kimkakati wa doria.
+                </p>
+                <p>
+                    Pia, una "macho" ya <strong>Computer Vision (AI)</strong> ambayo yanakagua picha zote za ushahidi zinazotumwa na wananchi papo hapo ili kugundua viwango vya dharura na kuzuia upotezaji wa ushahidi.
+                </p>
+            </div>
+        </div>
     </div>
 
+    <div id="contactModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl relative">
+            <button onclick="fungaModal('contactModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg">✕</button>
+            <h3 class="text-2xl font-black text-emerald-400 mb-4 flex items-center gap-2">📞 Mawasiliano ya Dharura</h3>
+            <div class="text-sm text-slate-300 space-y-4">
+                <p class="text-slate-400">Kama una dharura ya haraka inayohitaji msaada wa askari waliopo karibu, tafadhali tumia njia hizi rasmi:</p>
+                
+                <div class="space-y-2 border-t border-slate-800 pt-3 font-mono">
+                    <p class="flex justify-between"><span>🚨 Simu ya Dharura:</span> <span class="text-emerald-400 font-bold">112 / 999</span></p>
+                    <p class="flex justify-between"><span>🏢 Makao Makuu ya IT:</span> <span class="text-slate-400">+255 22 2112233</span></p>
+                    <p class="flex justify-between"><span>✉️ Barua Pepe (Email):</span> <span class="text-slate-400">support.ctas@police.go.tz</span></p>
+                    <p class="flex justify-between"><span>📍 Ofisi Kuu:</span> <span class="text-slate-400">Dar es Salaam, Tanzania</span></p>
+                </div>
+                <p class="text-[11px] text-amber-500 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20 italic mt-2">
+                    💡 Kumbuka: Ripoti zote zinazotumwa kupitia Lango la Mwananchi zinawafikia askari wa doria ndani ya sekunde 5 tu!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600 flex flex-col md:flex-row justify-between items-center px-6 gap-2">
+        <div>&copy; 2026 CTAS Security Platform. Haki zote zimehifadhiwa.</div>
+        <div class="flex gap-4 text-[11px]">
+            <span class="text-slate-700">Msaada wa Kiufundi: v2.0-AI</span>
+        </div>
+    </footer>
+
     <script>
-        const form = document.getElementById('crimeReportForm');
-        const submitBtn = document.getElementById('submitBtn');
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault(); 
-
-            submitBtn.innerText = "Inatuma Ripoti na Picha...";
-            submitBtn.disabled = true;
-
-            const apiUrl = "http://127.0.0.1:8000/api/reports/";
-            const formData = new FormData();
-            
-            formData.append('description', document.getElementById('description').value);
-            formData.append('district', parseInt(document.getElementById('districtId').value));
-            formData.append('crime_type', parseInt(document.getElementById('crimeTypeId').value));
-            formData.append('gps_latitude', parseFloat(document.getElementById('latitude').value));
-            formData.append('gps_longitude', parseFloat(document.getElementById('longitude').value));
-            formData.append('status', 'NEW');
-
-            const imageFile = document.getElementById('evidenceImage').files[0];
-            if (imageFile) {
-                formData.append('evidence_url', imageFile);
-            }
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    body: formData 
-                });
-
-                if (response.ok) {
-                    // MABORESHO: Kusoma ID iliyotolewa na Seva kwa ajili ya Tracking
-                    const dataIliyohifadhiwa = await response.json();
-                    
-                    alert(`Hongera! Ripoti yako pamoja na picha ya ushahidi zimepokelewa na Polisi.\n\n⚠️ KUMBUMBUKU: Namba ya kufuatilia ripoti yako ni #${dataIliyohifadhiwa.id}. Ikariri au iandike mahali salama ili kuitumia kwenye ukurasa wa kufuatilia.`);
-                    form.reset(); 
-                } else {
-                    const errorData = await response.json();
-                    alert("Kosa limejitokeza: Seva imekataa data yako. Angalia makosa kwenye console.");
-                    console.error("Seva Response Error:", errorData);
-                }
-            } catch (error) {
-                alert("Tatizo la Mtandao: Imeshindwa kuunganishwa na Seva ya Django.");
-                console.error("Network Error: ", error);
-            } finally {
-                submitBtn.innerText = "Tuma Ripoti Polisi";
-                submitBtn.disabled = false;
-            }
-        });
-
-        function pataEneoLangu() {
-            const latInput = document.getElementById('latitude');
-            const lngInput = document.getElementById('longitude');
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        latInput.value = position.coords.latitude;
-                        lngInput.value = position.coords.longitude;
-                        alert("Eneo lako limesomwa kwa mafanikio kupitia Satelaiti!");
-                    },
-                    (error) => {
-                        alert("Imeshindwa kusoma GPS. Hakikisha umeruhusu 'Location Access' kwenye kivinjari chako.");
-                        console.error("GPS Error: ", error);
-                    }
-                );
-            } else {
-                alert("Kivinjari chako hakina uwezo wa kusoma GPS (Not Supported).");
-            }
+        function funguaModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function fungaModal(id) {
+            document.getElementById(id).classList.add('hidden');
         }
 
-        window.onload = pataEneoLangu;
+        // Funga modal kama mtumiaji akibonyeza eneo la nje ya kisanduku
+        window.onclick = function(event) {
+            if (event.target.classList.contains('fixed')) {
+                event.target.classList.add('hidden');
+            }
+        }
     </script>
+
 </body>
 </html>

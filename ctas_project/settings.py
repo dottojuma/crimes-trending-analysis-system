@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',  # <-- Kagua hapa! Hakikisha neno 'contrib' lipo na hakuna herufi iliyofutika
@@ -155,5 +156,47 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated', # <--- BADILISHA AllowAny IWE IsAuthenticated!
     ],
 }
+
+# =======================================================
+# JAZZMIN ADMIN THEME CONFIGURATION 🛡️🎨
+# =======================================================
+JAZZMIN_SETTINGS = {
+    "site_title": "CTAS Admin",
+    "site_header": "CTAS COMMAND CENTER",
+    "site_brand": "CTAS ADMIN 🛡️",
+    "welcome_sign": "Karibu kwenye Mfumo Mkuu wa Usimamizi (CTAS Admin)",
+    "copyright": "Jeshi la Polisi CTAS Automation Team",
+    "search_model": ["auth.User", "crimes.CrimeReport"],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    
+    # VIUNGANISHI VYA JUU
+    "topmenu_links": [
+        {"name": "Ukurasa Mkuu (Home)", "url": "admin:index", "permissions": ["auth.view_user"]},
+    ],
+
+    # Mipangilio mingine ya Jazzmin
+    "use_google_fonts": True,
+    "custom_links": {}, 
+    
+    # Icons kwa ajili ya Model zako (Zinatumia FontAwesome)
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user-shield",
+        "crimes.CrimeReport": "fas fa-exclamation-triangle",
+        "crimes.District": "fas fa-map-marked-alt",
+        "authtoken.tokenproxy": "fas fa-key",
+    },
+}
+
+# Muonekano wa rangi za Giza (Dark Mode)
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",      
+    "dark_mode_theme": "darkly",
+    "navbar": "navbar-dark bg-dark",
+    "sidebar": "sidebar-dark-primary",
+}
+
+# Mipangilio ya Usalama wa Vikao na CSRF (Inazuia migogoro ya logout kwenye Ubuntu)
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
