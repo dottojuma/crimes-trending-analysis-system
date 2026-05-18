@@ -14,23 +14,23 @@
             <h1 class="text-xl font-black tracking-wider text-indigo-400">CTAS AUTOMATION</h1>
         </div>
         <div class="flex gap-4 text-xs font-bold">
-            <button onclick="funguaModal('aboutModal')" class="text-slate-400 hover:text-white transition">Kuhusu Sisi (About)</button>
-            <button onclick="funguaModal('contactModal')" class="text-slate-400 hover:text-white transition">Mawasiliano (Contacts)</button>
+            <button onclick="funguaModal('aboutModal')" class="text-slate-400 hover:text-white transition cursor-pointer">Kuhusu Sisi (About)</button>
+            <button onclick="funguaModal('contactModal')" class="text-slate-400 hover:text-white transition cursor-pointer">Mawasiliano (Contacts)</button>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center">
-        <div class="mb-8">
+    <main class="max-w-6xl mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center w-full">
+        <div class="mb-12">
             <span class="text-6xl animate-pulse inline-block mb-4">🔮</span>
-            <h2 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
-                CRIME TRENDS & ANALYSIS SYSTEM
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-3 uppercase">
+                Crime Trends & Analysis System
             </h2>
             <p class="text-slate-400 text-base md:text-lg max-w-xl mx-auto">
                 Karibu kwenye mfumo wa kisasa wa kuripoti uhalifu, ulinzi shirikishi, na utabiri wa usalama wa jamii kwa kutumia Machine Learning na AI.
             </p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6 w-full max-w-2xl mt-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mt-4 items-stretch">
             
             <a href="mwananchi.html" class="group bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-6 rounded-2xl text-left transition duration-300 shadow-xl flex flex-col justify-between">
                 <div>
@@ -44,6 +44,21 @@
                 </div>
                 <div class="mt-6 text-xs text-indigo-400 font-bold group-hover:underline flex items-center gap-1">
                     Fungua Sehemu ya Raia ➔
+                </div>
+            </a>
+
+            <a href="track_report.html" class="bg-slate-900 border border-slate-800 hover:border-cyan-500/50 p-6 rounded-2xl shadow-xl flex flex-col justify-center items-center relative overflow-hidden group transition duration-300">
+                <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-50"></div>
+                
+                <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-xl flex items-center justify-center text-xl font-bold mb-3 transition group-hover:scale-110 group-hover:bg-cyan-600 group-hover:text-white">
+                    🔍
+                </div>
+                
+                <h3 class="text-lg font-bold text-white mb-1">Fuatilia Ripoti</h3>
+                <p class="text-[11px] text-slate-400 mb-4 px-2">Una namba ya malalamiko?</p>
+                
+                <div class="w-full text-center bg-slate-800 group-hover:bg-cyan-500 group-hover:text-slate-950 border border-slate-700/60 group-hover:border-cyan-400 text-cyan-400 text-xs font-extrabold py-3 rounded-xl transition duration-200 shadow-md tracking-wide">
+                    KAGUA SASA 🚀
                 </div>
             </a>
 
@@ -67,7 +82,7 @@
 
     <div id="aboutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl relative">
-            <button onclick="fungaModal('aboutModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg">✕</button>
+            <button onclick="fungaModal('aboutModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg cursor-pointer">✕</button>
             <h3 class="text-2xl font-black text-indigo-400 mb-4 flex items-center gap-2">🔮 Kuhusu Mfumo (CTAS)</h3>
             <div class="text-sm text-slate-300 space-y-3 leading-relaxed">
                 <p>
@@ -85,7 +100,7 @@
 
     <div id="contactModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl relative">
-            <button onclick="fungaModal('contactModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg">✕</button>
+            <button onclick="fungaModal('contactModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg cursor-pointer">✕</button>
             <h3 class="text-2xl font-black text-emerald-400 mb-4 flex items-center gap-2">📞 Mawasiliano ya Dharura</h3>
             <div class="text-sm text-slate-300 space-y-4">
                 <p class="text-slate-400">Kama una dharura ya haraka inayohitaji msaada wa askari waliopo karibu, tafadhali tumia njia hizi rasmi:</p>
@@ -103,7 +118,7 @@
         </div>
     </div>
 
-    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600 flex flex-col md:flex-row justify-between items-center px-6 gap-2">
+    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600 flex flex-col md:flex-row justify-between items-center px-6 gap-2 bg-slate-950">
         <div>&copy; 2026 CTAS Security Platform. Haki zote zimehifadhiwa.</div>
         <div class="flex gap-4 text-[11px]">
             <span class="text-slate-700">Msaada wa Kiufundi: v2.0-AI</span>
@@ -118,7 +133,6 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // Funga modal kama mtumiaji akibonyeza eneo la nje ya kisanduku
         window.onclick = function(event) {
             if (event.target.classList.contains('fixed')) {
                 event.target.classList.add('hidden');
