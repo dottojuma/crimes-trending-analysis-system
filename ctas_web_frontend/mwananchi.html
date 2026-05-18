@@ -3,204 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lango la Mwananchi - CTAS</title>
+    <title>CTAS - Lango la Mwananchi</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
 
-    <nav class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl">🛡️</span>
-            <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">CTAS CITIZEN</span>
+    <header class="border-b border-slate-900 bg-slate-900/50 backdrop-blur py-4 px-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🇹🇿</span>
+            <h1 class="text-xl font-black tracking-wider text-indigo-400">CTAS CITIZEN PORTAL</h1>
         </div>
-        <div class="flex items-center space-x-3">
-            <a href="track_report.html" class="text-xs bg-slate-800/80 border border-slate-700/50 text-slate-300 hover:bg-slate-700 hover:text-white px-4 py-2.5 rounded-xl transition shadow-md">
-                🔍 Fuatilia Ripoti
-            </a>
-        </div>
-    </nav>
+        <a href="index.html" class="text-xs font-bold text-slate-400 hover:text-white transition">➔ Nyumbani</a>
+    </header>
 
-    <main class="max-w-3xl w-full mx-auto p-4 md:p-8 my-4 flex-grow flex flex-col justify-center">
-        
-        <div class="text-center mb-6">
-            <h1 class="text-2xl md:text-3xl font-black text-slate-100">
-                Ulinzi Shirikishi <span class="text-emerald-400">CTAS</span>
-            </h1>
+    <main class="max-w-2xl mx-auto px-6 py-12 w-full flex-grow">
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-black text-white mb-2">🚨 TOA RIPOTI YA TUKIO</h2>
+            <p class="text-sm text-slate-400">Taarifa yako itafika kituoni na kwa askari wa doria waliopo karibu yako kwa sekunde chache.</p>
         </div>
 
-        <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-lg">
-            <div class="border-b border-slate-800/60 pb-3 mb-5">
-                <h2 class="text-base font-bold text-emerald-400 flex items-center gap-2">
-                    <span>📝</span> Ripoti Tukio la Uhalifu
-                </h2>
+        <form id="crimeForm" class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-2xl shadow-2xl space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Wilaya ya Tukio</label>
+                    <select id="districtSelect" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                        <option value="">-- Pakia Wilaya Kwanza --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Aina ya Tukio / Uhalifu</label>
+                    <select id="crimeTypeSelect" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                        <option value="">-- Chagua Aina ya Uhalifu --</option>
+                        <option value="1">Wizi / Udokozi (Theft)</option>
+                        <option value="2">Uvamizi wa Silaha (Robbery)</option>
+                        <option value="3">Ushambulizi wa Mwili (Assault)</option>
+                        <option value="4">Uharibifu wa Mali (Vandalism)</option>
+                        <option value="5">Dharura Nyinginezo</option>
+                    </select>
+                </div>
             </div>
 
-            <form id="crimeReportForm" onsubmit="submitReport(event)" class="space-y-4">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Aina ya Tukio / Uhalifu</label>
-                        <select id="crime_type" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none transition cursor-pointer">
-                            <option value="" disabled selected>Chagua aina ya tukio...</option>
-                            <option value="1">Wizi au Uporaji</option>
-                            <option value="2">Ushambulizi wa Mwili</option>
-                            <option value="3">Uharibifu wa Mali / Miundo mbinu</option>
-                            <option value="4">Ulaghai / Uhalifu wa Mtandaoni</option>
-                        </select>
-                    </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kituo cha Polisi (Hiari - Dropdown itajaa yenyewe)</label>
+                <select id="stationSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                    <option value="">-- Chagua Kituo (Optional) --</option>
+                </select>
+            </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Wilaya / District</label>
-                        <select id="district" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none transition cursor-pointer">
-                            <option value="" disabled selected>Chagua Wilaya ilipo...</option>
-                            <option value="1">Ilala</option>
-                            <option value="2">Kinondoni</option>
-                            <option value="3">Temeke</option>
-                            <option value="4">Ubungo</option>
-                            <option value="5">Kigamboni</option>
-                        </select>
+            <div class="bg-slate-950 border border-slate-800/80 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl text-cyan-400" id="gpsIcon">📍</span>
+                    <div class="text-left">
+                        <h4 class="text-xs font-bold text-white">Uelekeo wa Kijiografia (GPS)</h4>
+                        <p id="gpsStatus" class="text-[11px] text-slate-500">Ukiwasha GPS, mfumo utatafuta kituo cha karibu zaidi kiotomatiki.</p>
                     </div>
                 </div>
+                <button type="button" onclick="washaGPS()" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 border border-slate-700/60 text-cyan-400 text-xs font-bold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap">
+                    Washa GPS 🌐
+                </button>
+                <input type="hidden" id="gpsLatitude" name="gps_latitude">
+                <input type="hidden" id="gpsLongitude" name="gps_longitude">
+            </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Maelezo ya Description (Nini kimetokea)</label>
-                    <textarea id="description" rows="3" placeholder="Eleza kwa ufupi tukio lilivyotokea..." 
-                              class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none transition resize-none"></textarea>
-                </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Maelezo ya Tukio</label>
+                <textarea id="description" required rows="4" placeholder="Eleza kwa ufupi matukio..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition placeholder:text-slate-600"></textarea>
+            </div>
 
-                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
-                            <span class="animate-pulse text-red-500">📡</span> Satellite Live Location Track
-                        </span>
-                        <button type="button" onclick="getLocation()" class="text-[11px] bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 px-3 py-1.5 rounded-lg transition font-semibold">
-                            Chukua Mahali Nilipo (Get GPS)
-                        </button>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-1">Latitude</label>
-                            <input type="text" id="latitude" readonly placeholder="Inasubiri GPS..." 
-                                   class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-1">Longitude</label>
-                            <input type="text" id="longitude" readonly placeholder="Inasubiri GPS..." 
-                                   class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none">
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ushahidi wa Picha (Kama upo)</label>
+                <input type="file" id="evidenceFile" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 file:cursor-pointer transition">
+            </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Ambatisha Ushahidi (Picha / Video)</label>
-                    <div class="border border-dashed border-slate-800 hover:border-slate-700 bg-slate-950/40 rounded-xl p-3 text-center transition relative group cursor-pointer">
-                        <input type="file" id="evidenceFile" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                        <div class="flex items-center justify-center space-x-2">
-                            <span class="text-lg">📸</span>
-                            <span class="text-xs text-slate-400">Bofya hapa kupakia Picha au Video ya Ushahidi</span>
-                        </div>
-                    </div>
-                </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm py-4 rounded-xl shadow-lg shadow-indigo-600/10 transition duration-200 uppercase tracking-wider">
+                Tuma Ripoti Sasa 🚀
+            </button>
 
-                <div class="pt-2">
-                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-extrabold py-3 rounded-xl text-xs tracking-wider transition uppercase transform active:scale-[0.99]">
-                        Tuma Ripoti kwa Jeshi la Polisi 🚀
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="mt-4 text-center">
-            <p class="text-xs text-slate-500">
-                Tayari una ripoti? <a href="track_report.html" class="text-emerald-400 hover:underline font-semibold">Fuatilia Hapa 🔍</a>
-            </p>
-        </div>
+        </form>
     </main>
 
-    <footer class="text-center py-4 text-[10px] text-slate-600 border-t border-slate-900/60 bg-slate-950">
-        © 2026 CTAS Automation. Haki zote zimehifadhiwa Jeshi la Polisi.
+    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600">
+        &copy; 2026 CTAS Security Platform. Mfumo wa Dharura.
     </footer>
 
     <script>
-        function getLocation() {
-            const latInput = document.getElementById('latitude');
-            const longInput = document.getElementById('longitude');
-            
-            if (navigator.geolocation) {
-                latInput.placeholder = "Inatafuta Satilaiti...";
-                longInput.placeholder = "Inatafuta Satilaiti...";
+        const API_BASE = "http://127.0.0.1:8000"; 
+        let vituoVyoteKache = []; 
+
+        async function anzishaUkurasa() {
+            try {
+                const response = await fetch(`${API_BASE}/api/stations/`);
+                const data = await response.json();
                 
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        latInput.value = position.coords.latitude.toFixed(6);
-                        longInput.value = position.coords.longitude.toFixed(6);
-                    },
-                    (error) => {
-                        alert("Imeshindwa kupata eneo lako. Hakikisha umeruhusu Location (GPS) kwenye browser yako.");
-                        latInput.placeholder = "Goma kupata GPS";
-                        longInput.placeholder = "Goma kupata GPS";
-                    }
-                );
-            } else {
-                alert("Browser yako haisapoti mifumo ya Geolocation.");
+                if (data && data.status === "Success" && Array.isArray(data.stations)) {
+                    vituoVyoteKache = data.stations;
+                    jazaDropdownYaWilaya(vituoVyoteKache);
+                    jazaKadiYaVituo(vituoVyoteKache);
+                } else {
+                    console.error("Muundo wa data haueleweki:", data);
+                }
+            } catch (error) {
+                console.error("Imeshindwa kuongea na server ya Django:", error);
             }
         }
 
-        async function submitReport(event) {
-            event.preventDefault();
+        function jazaDropdownYaWilaya(vituo) {
+            const districtSelect = document.getElementById('districtSelect');
+            let options = '<option value="">-- Chagua Wilaya --</option>';
             
-            const crime_type = document.getElementById('crime_type').value;
-            const district = document.getElementById('district').value;
-            const description = document.getElementById('description').value;
-            
-            // Kama GPS haikubonyezwa, tunaweka thamani mbadala (default) ili kuzuia kosa la 400 bad request
-            const lat = document.getElementById('latitude').value || "0.0";
-            const long = document.getElementById('longitude').value || "0.0";
-            
-            if(!crime_type || !district || !description) {
-                alert("Tafadhali jaza Aina ya Tukio, Wilaya na Maelezo kamili!");
+            const wilayaZilizopo = [];
+            vituo.forEach(station => {
+                if (!wilayaZilizopo.some(w => w.id == station.district_id)) {
+                    wilayaZilizopo.push({ id: station.district_id, name: station.district_name });
+                }
+            });
+
+            wilayaZilizopo.forEach(w => {
+                options += `<option value="${w.id}">${w.name}</option> `;
+            });
+            districtSelect.innerHTML = options;
+        }
+
+        function jazaKadiYaVituo(vituo, selectedStationId = "") {
+            const stationSelect = document.getElementById('stationSelect');
+            let options = '<option value="">-- Chagua Kituo (Optional) --</option>';
+            vituo.forEach(station => {
+                const isSelected = station.id == selectedStationId ? "selected" : "";
+                options += `<option value="${station.id}" ${isSelected}>${station.name} (${station.district_name})</option>`;
+            });
+            stationSelect.innerHTML = options;
+        }
+
+        document.getElementById('districtSelect').addEventListener('change', function() {
+            const districtId = this.value;
+            if (!districtId) {
+                jazaKadiYaVituo(vituoVyoteKache);
                 return;
             }
-            
+            const vituoVilivyochujwa = vituoVyoteKache.filter(v => v.district_id == districtId);
+            jazaKadiYaVituo(vituoVilivyochujwa);
+        });
+
+        function pigaHesabuUmbali(lat1, lon1, lat2, lon2) {
+            const R = 6371; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        }
+
+        function washaGPS() {
+            const statusLabel = document.getElementById('gpsStatus');
+            const icon = document.getElementById('gpsIcon');
+            const districtSelect = document.getElementById('districtSelect');
+
+            if (!navigator.geolocation) {
+                statusLabel.innerText = "❌ Kivinjari chako hakisupport GPS.";
+                statusLabel.className = "text-[11px] text-red-400";
+                return;
+            }
+
+            statusLabel.innerText = "🛰️ Inatafuta mawimbi ya GPS...";
+            statusLabel.className = "text-[11px] text-amber-400";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    document.getElementById('gpsLatitude').value = lat;
+                    document.getElementById('gpsLongitude').value = lon;
+
+                    let kituoChaKaribu = null;
+                    let umbaliMdogo = Infinity;
+
+                    if (vituoVyoteKache.length > 0) {
+                        vituoVyoteKache.forEach(k => {
+                            const d = pigaHesabuUmbali(lat, lon, k.latitude, k.longitude);
+                            if (d < umbaliMdogo) {
+                                umbaliMdogo = d;
+                                kituoChaKaribu = k;
+                            }
+                        });
+                    }
+
+                    icon.innerText = "✅";
+                    if (kituoChaKaribu) {
+                        statusLabel.innerText = `GPS Imeshikwa! Kituo cha karibu: ${kituoChaKaribu.name} (Umbali: ${umbaliMdogo.toFixed(2)} Km).`;
+                        
+                        districtSelect.value = kituoChaKaribu.district_id;
+                        
+                        const vituoVyaWilayaHiyo = vituoVyoteKache.filter(v => v.district_id == kituoChaKaribu.district_id);
+                        jazaKadiYaVituo(vituoVyaWilayaHiyo, kituoChaKaribu.id);
+                    } else {
+                        statusLabel.innerText = `GPS Imeshikwa (Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}).`;
+                    }
+                    statusLabel.className = "text-[11px] text-emerald-400 font-medium";
+                },
+                (error) => {
+                    statusLabel.innerText = "❌ Imeshindwa kupata eneo lako. Tafadhali ruhusu Location.";
+                    statusLabel.className = "text-[11px] text-red-400";
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        document.getElementById('crimeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
             const formData = new FormData();
-            // MAJINA HAYA YAMESAWRAZISHWA NA MODEL HALISI YA DJANGO (models.py)
-            formData.append('district', district); 
-            formData.append('crime_type', crime_type);
-            formData.append('description', description);
-            formData.append('gps_latitude', parseFloat(lat));
-            formData.append('gps_longitude', parseFloat(long));
+            formData.append('district', document.getElementById('districtSelect').value);
+            formData.append('crime_type', document.getElementById('crimeTypeSelect').value); 
+            formData.append('description', document.getElementById('description').value);
             
+            const stationId = document.getElementById('stationSelect').value;
+            if (stationId) formData.append('police_station', stationId);
+
+            const lat = document.getElementById('gpsLatitude').value;
+            const lon = document.getElementById('gpsLongitude').value;
+            if (lat && lon) {
+                formData.append('gps_latitude', lat);
+                formData.append('gps_longitude', lon);
+            }
+
             const fileInput = document.getElementById('evidenceFile');
-            if (fileInput.files.length > 0) {
-                formData.append('evidence_url', fileInput.files[0]);
+            if (fileInput.files[0]) {
+                formData.append('evidence_url', fileInput.files[0]); 
             }
 
             try {
-                // Mlango rasmi wa asili wa REST API ya Django
-                const response = await fetch('http://127.0.0.1:8000/api/reports/', {
+                const response = await fetch(`${API_BASE}/api/reports/`, {
                     method: 'POST',
                     body: formData
                 });
 
-                if (response.ok) {
-                    const reportData = await response.json();
-                    // Tunachukua ID halisi ya namba iliyotemwa na Database ya Django (mfano: 12)
-                    const databaseId = reportData.id;
+                const resData = await response.json();
 
-                    alert(`🚨 RIPOTI IMESAJILIWA KWENYE DATABASE!\n\nNamba yako ya kufuatilia ni: ${databaseId}\n\nTafadhali itunze namba hii vizuri.`);
-                    
-                    // Mwananchi anasafirishwa kwenda kufuatilia kwa kutumia hiyo ID halisi ya namba
-                    window.location.href = `track_report.html?ref=${databaseId}`;
+                if (response.ok || response.status === 201) {
+                    const nambaYaRipoti = resData.report_id || resData.id || "Imesajiliwa";
+                    alert(`🚨 Ripoti Imewasilishwa!\nNamba yako ya dharura ya kufuatilia ripoti ni: ${nambaYaRipoti}\n\nTafadhali ihifadhi namba hii.`);
+                    document.getElementById('crimeForm').reset();
+                    window.location.href = "index.html";
                 } else {
-                    const errorData = await response.json();
-                    alert("Seva imekataa data! Sababu ya kiufundi: " + JSON.stringify(errorData));
+                    alert("Kosa limeonekana wakati wa kutuma ripoti. Angalia fomu yako.");
                 }
             } catch (error) {
-                console.error("Error:", error);
-                alert("Seva haipatikani kwa sasa. Hakikisha 'python manage.py runserver' imewaka.");
+                console.error("Network Error:", error);
+                alert("Imeshindwa kuwasiliana na server ya CTAS.");
             }
-        }
+        });
+
+        window.onload = anzishaUkurasa;
     </script>
 </body>
 </html>

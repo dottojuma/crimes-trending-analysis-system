@@ -1,25 +1,25 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from .models import CrimeReport, District
+from .models import CrimeReport, District, PoliceStation
 
 @admin.register(CrimeReport)
 class CrimeReportAdmin(admin.ModelAdmin):
     # 1. Maeneo yatakayoonekana kwenye meza kuu ya Admin
-    list_display = ('id', 'district', 'status', 'created_at', 'has_evidence', 'view_evidence_thumbnail')
-    list_filter = ('status', 'district', 'created_at')
+    # Tumeongeza 'police_station' ili kuona kituo kilichopangiwa kwenye meza kuu
+    list_display = ('id', 'district', 'police_station', 'status', 'created_at', 'has_evidence', 'view_evidence_thumbnail')
+    list_filter = ('status', 'district', 'police_station', 'created_at')
     
     # 2. SEHEMU YA UKAGUZI (Macho ya Admin):
-    # Tumeongeza 'display_evidence_image' kwenye list ya kusoma tu ili Admin aone picha ndani ya ripoti
     readonly_fields = (
         'id', 'description', 'district', 'evidence_url', 
         'display_evidence_image', 'gps_latitude', 'gps_longitude', 'created_at'
     )
 
     # 3. PANGA MPANGILIO WA FOMU NDANI (Fields layout)
-    # Hapa tunamwambia Django jinsi ya kuonyesha maelezo ndani ya ripoti
+    # Tumeongeza 'police_station' hapa ili Admin aweze kuchagua au kubadili kituo doria
     fields = (
-        'id', 'created_at', 'district', 'description', 
-        'evidence_url', 'display_evidence_image', # Picha itaonekana hapa ndani ikikaguliwa
+        'id', 'created_at', 'district', 'police_station', 'description', 
+        'evidence_url', 'display_evidence_image', 
         'gps_latitude', 'gps_longitude', 'status'
     )
 
@@ -49,6 +49,18 @@ class CrimeReportAdmin(admin.ModelAdmin):
     has_evidence.boolean = True
     has_evidence.short_description = "Ina Ushahidi?"
 
+
 @admin.register(District)
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
+
+
+# ==========================================
+# USAJILI MPYA: KITUO VYA POLISI (USING DECORATOR)
+# ==========================================
+@admin.register(PoliceStation)
+class PoliceStationAdmin(admin.ModelAdmin):
+    # Inatengeneza meza safi ya kuorodhesha vituo, coordinates zao na namba za simu
+    list_display = ('id', 'name', 'district', 'latitude', 'longitude', 'phone_number')
+    list_filter = ('district',)
+    search_fields = ('name', 'phone_number')

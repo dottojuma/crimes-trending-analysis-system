@@ -13,6 +13,19 @@ class CrimeType(models.Model):
 
     def __str__(self):
         return self.name
+# 1. MODEL MPYA YA VITUO VYA POLISI
+class PoliceStation(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Jina la Kituo")
+    district = models.ForeignKey(District, on_delete=models.CASCADE, related_name='stations', verbose_name="Wilaya")
+    latitude = models.FloatField(verbose_name="GPS Latitude")
+    longitude = models.FloatField(verbose_name="GPS Longitude")
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Namba ya Simu ya Kituo")
+
+    class Meta:
+        verbose_name_plural = "Vituo vya Polisi"
+
+    def __str__(self):
+        return f"{self.name} ({self.district.name})"
 
 # 3. Meza Kuu ya Taarifa za Matukio (Crime Reports)
 class CrimeReport(models.Model):
@@ -25,6 +38,17 @@ class CrimeReport(models.Model):
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     crime_type = models.ForeignKey(CrimeType, on_delete=models.CASCADE)
     description = models.TextField()
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True)
+    
+    # ONGEZA FIELD HII HAPA CHINI:
+    police_station = models.ForeignKey(
+        PoliceStation, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='reports',
+        verbose_name="Kituo Kilichopangiwa Tukio"
+    )
     # Tumeibadilisha kutoka URLField kwenda ImageField. 
     # upload_to='crimes_evidence/' ina maana picha zitaingia ndani ya media/crimes_evidence/
     # blank=True, null=True ina maana mwananchi anaweza kuripoti hata bila kuweka picha (hiari)
