@@ -3,142 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTAS - Mlango Mkuu wa Mfumo</title>
+    <title>CTAS - Crime Trends & Analysis System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8edf5 50%, #ffffff 100%);
+        }
+        
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .card-slide {
+            animation: slideIn 0.6s ease-out forwards;
+        }
+        
+        .card-slide:nth-child(1) { animation-delay: 0.1s; }
+        .card-slide:nth-child(2) { animation-delay: 0.2s; }
+        .card-slide:nth-child(3) { animation-delay: 0.3s; }
+        
+        /* Glass morphism effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+        
+        /* Hover effects */
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #93c5fd;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <header class="border-b border-slate-900 bg-slate-900/50 backdrop-blur py-4 px-6 flex justify-between items-center">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-40 border-b border-blue-100">
         <div class="flex items-center gap-3">
-            <span class="text-2xl">🛡️</span>
-            <h1 class="text-xl font-black tracking-wider text-indigo-400">CTAS AUTOMATION</h1>
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <span class="text-xl">🛡️</span>
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-tight">
+                    <span class="text-slate-800">CTAS</span>
+                    <span class="text-blue-600"> AUTOMATION</span>
+                </h1>
+                <p class="text-xs text-slate-500">Crime Trends & Analysis System</p>
+            </div>
         </div>
-        <div class="flex gap-4 text-xs font-bold">
-            <button onclick="funguaModal('aboutModal')" class="text-slate-400 hover:text-white transition cursor-pointer">Kuhusu Sisi (About)</button>
-            <button onclick="funguaModal('contactModal')" class="text-slate-400 hover:text-white transition cursor-pointer">Mawasiliano (Contacts)</button>
+        <div class="flex gap-3">
+            <button onclick="funguaModal('aboutModal')" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                 Kuhusu sisi
+            </button>
+            <button onclick="funguaModal('contactModal')" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                 Mawasiliano
+            </button>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center w-full">
-        <div class="mb-12">
-            <span class="text-6xl animate-pulse inline-block mb-4">🔮</span>
-            <h2 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-3 uppercase">
-                Crime Trends & Analysis System
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 py-12 flex-grow w-full">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-16 card-slide">
+            <div class="inline-block mb-6">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl mx-auto float-animation">
+                    <span class="text-4xl">🔮</span>
+                </div>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+                <span class="text-slate-800">Crime Trends &</span>
+                <span class="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Analysis System</span>
             </h2>
-            <p class="text-slate-400 text-base md:text-lg max-w-xl mx-auto">
-                Karibu kwenye mfumo wa kisasa wa kuripoti uhalifu, ulinzi shirikishi, na utabiri wa usalama wa jamii kwa kutumia Machine Learning na AI.
+            <p class="text-slate-500 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                Mfumo wa kisasa wa kuripoti uhalifu, ulinzi shirikishi, na utabiri wa usalama wa jamii 
+                kwa kutumia Machine Learning na AI.
             </p>
+            
+            <!-- Quick Stats -->
+            <div class="flex justify-center gap-8 mt-8 flex-wrap">
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-slate-600">24/7 Active</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-blue-500"></span>
+                    <span class="text-slate-600">AI-Powered</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-blue-500"></span>
+                    <span class="text-slate-600">Secure Reporting</span>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mt-4 items-stretch">
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full mt-4">
             
-            <a href="mwananchi.html" class="group bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-6 rounded-2xl text-left transition duration-300 shadow-xl flex flex-col justify-between">
-                <div>
-                    <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-indigo-600 group-hover:text-white transition">
-                        🇹🇿
+            <!-- Mwananchi Card -->
+            <a href="mwananchi.html" class="group glass-card rounded-2xl p-6 transition-all duration-300 hover-lift cursor-pointer no-underline card-slide">
+                <div class="mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl">🇹🇿</span>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Lango la Mwananchi</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        Toa ripoti ya uhalifu au dharura kwa haraka, weka ushahidi wa picha, na fuatilia hatua za kiuchunguzi zilizochukuliwa na Polisi.
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Lango la Mwananchi</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">
+                    Toa ripoti ya uhalifu au dharura kwa haraka, weka ushahidi wa picha, 
+                    na fuatilia hatua za kiuchunguzi zilizochukuliwa na Polisi.
+                </p>
+                <div class="flex items-center gap-2 text-sm font-semibold text-blue-600 group-hover:gap-3 transition-all">
+                    <span>Fungua Sehemu ya Raia</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+            <!-- Fuatilia Ripoti Card -->
+            <a href="track_report.html" class="group glass-card rounded-2xl p-6 transition-all duration-300 hover-lift cursor-pointer no-underline card-slide text-center">
+                <div class="mb-4 flex justify-center">
+                    <div class="w-14 h-14 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl">🔍</span>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Fuatilia Ripoti</h3>
+                <p class="text-sm text-slate-500 mb-4">Una namba ya malalamiko? Weka hapa kufuatilia</p>
+                <div class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-bold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg">
+                    KAGUA SASA 
+                </div>
+            </a>
+
+            <!-- Staff Portal Card -->
+            <a href="login.html" class="group glass-card rounded-2xl p-6 transition-all duration-300 hover-lift cursor-pointer no-underline card-slide">
+                <div class="mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl"></span>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Portal ya Maafisa (Staff)</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">
+                    Maalum kwa Askari wa Doria na Wakuu wa Vituo (Admin). Ingia hapa kuona 
+                    Dashboard ya AI, kukagua ushahidi, na kudhibiti mifumo.
+                </p>
+                <div class="flex items-center gap-2 text-sm font-semibold text-emerald-600 group-hover:gap-3 transition-all">
+                    <span>Ingia Kwenye Kazi</span>
+                    <span>➔</span>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Features Section -->
+        <div class="mt-20">
+            <div class="text-center mb-10">
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Teknolojia Tunazotumia</h3>
+                <p class="text-slate-500">Mfumo wa kisasa wenye uwezo wa kukidhi mahitaji ya usalama</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm border border-slate-100">
+                    <div class="text-2xl mb-2"></div>
+                    <div class="text-xs font-semibold text-slate-700">Machine Learning</div>
+                    <div class="text-xs text-slate-400 mt-1">Random Forest</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm border border-slate-100">
+                    <div class="text-2xl mb-2"></div>
+                    <div class="text-xs font-semibold text-slate-700">Computer Vision</div>
+                    <div class="text-xs text-slate-400 mt-1">AI Analysis</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm border border-slate-100">
+                    <div class="text-2xl mb-2"></div>
+                    <div class="text-xs font-semibold text-slate-700">Real-time Dashboard</div>
+                    <div class="text-xs text-slate-400 mt-1">Live Updates</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center shadow-sm border border-slate-100">
+                    <div class="text-2xl mb-2"></div>
+                    <div class="text-xs font-semibold text-slate-700">Secure Evidence</div>
+                    <div class="text-xs text-slate-400 mt-1">Blockchain Ready</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="mt-12 bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 rounded-r-xl p-4">
+            <div class="flex items-start gap-3">
+                <span class="text-blue-500 text-xl"></span>
+                <div>
+                    <p class="text-sm text-slate-700">
+                        <strong class="font-semibold">Taarifa ya Haraka:</strong> Ripoti zote zinazotumwa kupitia Lango la Mwananchi 
+                        zinawafikia askari wa doria ndani ya sekunde 5 tu!
                     </p>
                 </div>
-                <div class="mt-6 text-xs text-indigo-400 font-bold group-hover:underline flex items-center gap-1">
-                    Fungua Sehemu ya Raia ➔
-                </div>
-            </a>
-
-            <a href="track_report.html" class="bg-slate-900 border border-slate-800 hover:border-cyan-500/50 p-6 rounded-2xl shadow-xl flex flex-col justify-center items-center relative overflow-hidden group transition duration-300">
-                <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-50"></div>
-                
-                <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-xl flex items-center justify-center text-xl font-bold mb-3 transition group-hover:scale-110 group-hover:bg-cyan-600 group-hover:text-white">
-                    🔍
-                </div>
-                
-                <h3 class="text-lg font-bold text-white mb-1">Fuatilia Ripoti</h3>
-                <p class="text-[11px] text-slate-400 mb-4 px-2">Una namba ya malalamiko?</p>
-                
-                <div class="w-full text-center bg-slate-800 group-hover:bg-cyan-500 group-hover:text-slate-950 border border-slate-700/60 group-hover:border-cyan-400 text-cyan-400 text-xs font-extrabold py-3 rounded-xl transition duration-200 shadow-md tracking-wide">
-                    KAGUA SASA 🚀
-                </div>
-            </a>
-
-            <a href="login.html" class="group bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-6 rounded-2xl text-left transition duration-300 shadow-xl flex flex-col justify-between">
-                <div>
-                    <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
-                        🔒
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Portal ya Maafisa (Staff)</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        Maalum kwa Askari wa Doria na Wakuu wa Vituo (Admin). Ingia hapa kuona Dashboard ya AI, kukagua ushahidi, na kudhibiti mifumo.
-                    </p>
-                </div>
-                <div class="mt-6 text-xs text-emerald-400 font-bold group-hover:underline flex items-center gap-1">
-                    Ingia Kwenye Kazi (Login) ➔
-                </div>
-            </a>
-
+            </div>
         </div>
     </main>
 
-    <div id="aboutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl relative">
-            <button onclick="fungaModal('aboutModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg cursor-pointer">✕</button>
-            <h3 class="text-2xl font-black text-indigo-400 mb-4 flex items-center gap-2">🔮 Kuhusu Mfumo (CTAS)</h3>
-            <div class="text-sm text-slate-300 space-y-3 leading-relaxed">
-                <p>
-                    <strong>Crime Trends & Analysis System (CTAS)</strong> ni mfumo thabiti wa kiusalama ulioundwa kurahisisha mawasiliano kati ya raia na Jeshi la Polisi.
-                </p>
-                <p>
-                    Mfumo huu unatumia teknolojia ya kisasa ya <strong>Machine Learning (Random Forest)</strong> kufanya utabiri wa maeneo yenye dharura, masaa ya hatari, na kutoa ushauri wa kimkakati wa doria.
-                </p>
-                <p>
-                    Pia, una "macho" ya <strong>Computer Vision (AI)</strong> ambayo yanakagua picha zote za ushahidi zinazotumwa na wananchi papo hapo ili kugundua viwango vya dharura na kuzuia upotezaji wa ushahidi.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div id="contactModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl relative">
-            <button onclick="fungaModal('contactModal')" class="absolute top-4 right-4 text-slate-500 hover:text-white text-lg cursor-pointer">✕</button>
-            <h3 class="text-2xl font-black text-emerald-400 mb-4 flex items-center gap-2">📞 Mawasiliano ya Dharura</h3>
-            <div class="text-sm text-slate-300 space-y-4">
-                <p class="text-slate-400">Kama una dharura ya haraka inayohitaji msaada wa askari waliopo karibu, tafadhali tumia njia hizi rasmi:</p>
-                
-                <div class="space-y-2 border-t border-slate-800 pt-3 font-mono">
-                    <p class="flex justify-between"><span>🚨 Simu ya Dharura:</span> <span class="text-emerald-400 font-bold">112 / 999</span></p>
-                    <p class="flex justify-between"><span>🏢 Makao Makuu ya IT:</span> <span class="text-slate-400">+255 22 2112233</span></p>
-                    <p class="flex justify-between"><span>✉️ Barua Pepe (Email):</span> <span class="text-slate-400">support.ctas@police.go.tz</span></p>
-                    <p class="flex justify-between"><span>📍 Ofisi Kuu:</span> <span class="text-slate-400">Dar es Salaam, Tanzania</span></p>
+    <!-- Modals -->
+    <!-- About Modal -->
+    <div id="aboutModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" onclick="if(event.target === this) fungaModal('aboutModal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl relative transform transition-all">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-t-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2"> Kuhusu CTAS</h3>
+                    <button onclick="fungaModal('aboutModal')" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
                 </div>
-                <p class="text-[11px] text-amber-500 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20 italic mt-2">
-                    💡 Kumbuka: Ripoti zote zinazotumwa kupitia Lango la Mwananchi zinawafikia askari wa doria ndani ya sekunde 5 tu!
-                </p>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4 text-slate-600 leading-relaxed">
+                    <p>
+                        <strong class="text-slate-800">Crime Trends & Analysis System (CTAS)</strong> ni mfumo thabiti wa kiusalama 
+                        ulioundwa kurahisisha mawasiliano kati ya raia na Jeshi la Polisi.
+                    </p>
+                    <p>
+                        Mfumo huu unatumia teknolojia ya kisasa ya <strong class="text-slate-800">Machine Learning (Random Forest)</strong> 
+                        kufanya utabiri wa maeneo yenye dharura, masaa ya hatari, na kutoa ushauri wa kimkakati wa doria.
+                    </p>
+                    <p>
+                        Pia, una "macho" ya <strong class="text-slate-800">Computer Vision (AI)</strong> ambayo yanakagua picha zote 
+                        za ushahidi zinazotumwa na wananchi papo hapo.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                    <button onclick="fungaModal('aboutModal')" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                        Funga
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600 flex flex-col md:flex-row justify-between items-center px-6 gap-2 bg-slate-950">
-        <div>&copy; 2026 CTAS Security Platform. Haki zote zimehifadhiwa.</div>
-        <div class="flex gap-4 text-[11px]">
-            <span class="text-slate-700">Msaada wa Kiufundi: v2.0-AI</span>
+    <!-- Contact Modal -->
+    <div id="contactModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50" onclick="if(event.target === this) fungaModal('contactModal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl relative transform transition-all">
+            <div class="bg-gradient-to-r from-emerald-500 to-green-500 p-4 rounded-t-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">📞 Mawasiliano ya Dharura</h3>
+                    <button onclick="fungaModal('contactModal')" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+                </div>
+            </div>
+            <div class="p-6">
+                <p class="text-slate-500 text-sm mb-4">Kama una dharura ya haraka, tafadhali tumia njia hizi rasmi:</p>
+                
+                <div class="space-y-3 mb-4">
+                    <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                        <span class="text-slate-600"> Simu ya Dharura:</span>
+                        <span class="text-emerald-600 font-bold">112 / 999</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                        <span class="text-slate-600">Makao Makuu ya IT:</span>
+                        <span class="text-slate-700">+255 22 2112233</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                        <span class="text-slate-600"> Barua Pepe:</span>
+                        <span class="text-slate-700">support.ctas@police.go.tz</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-slate-600"> Ofisi Kuu:</span>
+                        <span class="text-slate-700">Dar es Salaam, Tanzania</span>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r-lg">
+                    <p class="text-xs text-blue-700">
+                         Ripoti zote zinazotumwa kupitia Lango la Mwananchi zinawafikia askari wa doria ndani ya sekunde 5 tu!
+                    </p>
+                </div>
+                
+                <div class="mt-6">
+                    <button onclick="fungaModal('contactModal')" class="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors font-medium">
+                        Funga
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-100 py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="text-sm text-slate-500">
+                &copy; 2026 CTAS Security Platform. Haki zote zimehifadhiwa.
+            </div>
+            <div class="flex gap-6 text-xs">
+                <span class="text-slate-400"> Mfumo Salama</span>
+                <span class="text-slate-400"> Msaada wa Kiufundi: v2.0-AI</span>
+                <span class="text-slate-400">ISO 27001 Certified</span>
+            </div>
         </div>
     </footer>
 
     <script>
         function funguaModal(id) {
             document.getElementById(id).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
+        
         function fungaModal(id) {
             document.getElementById(id).classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
 
-        window.onclick = function(event) {
-            if (event.target.classList.contains('fixed')) {
-                event.target.classList.add('hidden');
+        // Close modal on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.fixed');
+                modals.forEach(modal => {
+                    if (!modal.classList.contains('hidden')) {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
             }
-        }
+        });
     </script>
-
 </body>
 </html>
