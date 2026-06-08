@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,8 +26,7 @@ SECRET_KEY = 'django-insecure-w!4s=88q*28ssc!s2*f48ay2_36=*ooc#c5-8#i3npfp!&3_&@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -121,10 +121,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-import os # <-- Hakikisha hii ipo juu au iweke hapa chini
+ # <-- Hakikisha hii ipo juu au iweke hapa chini
 
 # Njia ya folda ambapo picha halisi zitahifadhiwa kwenye kompyuta yako
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # URL itakayotumika kufungua picha hizo kwenye browser (mfano: http://127.0.0.1:8000/media/picha.jpg)
 MEDIA_URL = '/media/'
