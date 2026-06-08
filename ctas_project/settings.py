@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -130,7 +131,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 CORS_ALLOW_ALL_ORIGINS = True
 # RUHUSU SEVA IPKEE VITAMBULISHO VYA ULINZI (COOKIES/SESSIONS) KUTOKA FRON
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Hakikisha origins zako zimeruhusiwa vizuri (pamoja na anwani za localhost)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",
